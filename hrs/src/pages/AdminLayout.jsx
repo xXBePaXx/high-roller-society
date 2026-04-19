@@ -11,6 +11,7 @@ const NAV = [
   { group: 'Gilde', items: [
     { path: 'users',    label: 'Benutzer' },
     { path: 'ranks',    label: 'Ränge' },
+    { path: 'events',   label: 'Events' },
   ]},
   { group: 'System', items: [
     { path: 'auditlog',    label: 'Audit-Log' },
