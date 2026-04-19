@@ -2,6 +2,8 @@ import { useState, useEffect } from 'react'
 import { useRanks } from '../../hooks/useRanks'
 
 const PERMISSIONS = [
+  { key: 'canManageDKP',     label: 'DKP verwalten',       desc: 'DKP vergeben, Loot eintragen, Anpassungen' },
+  { key: 'canViewDKP',      label: 'DKP einsehen',        desc: 'Eigenen Stand und Rangliste sehen' },
   { key: 'canManageEvents', label: 'Events verwalten',  desc: 'Events anlegen, bearbeiten & löschen' },
   { key: 'canSignupEvents', label: 'Events anmelden',   desc: 'Sich in Events ein-/austragen' },
   { key: 'canViewCalendar', label: 'Kalender sehen',    desc: 'Raid-Kalender aufrufen' },
