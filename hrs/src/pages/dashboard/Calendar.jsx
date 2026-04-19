@@ -233,6 +233,15 @@ function EventCard({ event, currentUser, onSignup, onSignoff }) {
 }
 
 export default function Calendar() {
+  // Zugriffsschutz
+  const { currentUser: _cu } = useAuth()
+  if (_cu?.role === 'member' && !_cu?.permissions?.canViewCalendar) {
+    return (
+      <div style={{ textAlign:'center', padding:'4rem', color:'#5a4828', fontStyle:'italic' }}>
+        Du hast keinen Zugriff auf den Kalender.
+      </div>
+    )
+  }
   const { events, loading, signUp, signOff } = useEvents()
   const { currentUser } = useAuth()
   const [showPast, setShowPast] = useState(false)
