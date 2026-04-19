@@ -8,6 +8,7 @@ import CharacterView    from './pages/dashboard/CharacterView'
 import Roster           from './pages/dashboard/Roster'
 import Calendar         from './pages/dashboard/Calendar'
 import DKP              from './pages/dashboard/DKP'
+import Verwaltung       from './pages/dashboard/Verwaltung'
 import { Identity, Texts, Stats, Credentials } from './pages/admin/Settings'
 import Events           from './pages/admin/Events'
 import Users            from './pages/admin/Users'
@@ -43,7 +44,8 @@ export default function App() {
             <Route index element={<CharacterView />} />
             <Route path="roster"   element={<Roster />} />
             <Route path="calendar" element={<Calendar />} />
-            <Route path="dkp"      element={<DKP />} />
+            <Route path="dkp"          element={<DKP />} />
+            <Route path="verwaltung"   element={<Verwaltung />} />
           </Route>
 
           {/* Catch-all → Landing */}
