@@ -33,6 +33,7 @@ export function useUsers() {
     const passwordHash = await hashPassword(password) // Nie Klartext speichern!
     const ref = await addDoc(collection(db, 'users'), {
       name: name.trim(),
+      nameLower: name.trim().toLowerCase(),
       passwordHash,  // gehashtes Passwort
       rank, cls, note,
       active: true,
