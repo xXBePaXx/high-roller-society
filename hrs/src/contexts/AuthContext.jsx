@@ -24,7 +24,14 @@ const DEFAULT_SETTINGS = {
   stat3n: 'T6',  stat3l: 'Progress',
 }
 
-// Session-Speicher: bleibt nur für diese Browser-Session
+// Standard-Fallback-Rechte wenn Rang keine Rechte hat
+const DEFAULT_MEMBER_PERMISSIONS = {
+  canManageEvents: false,
+  canSignupEvents: true,
+  canViewCalendar: true,
+  canViewRoster:   true,
+}
+
 let sessionUser = null
 
 export function AuthProvider({ children }) {
@@ -32,7 +39,6 @@ export function AuthProvider({ children }) {
   const [settings, setSettings]       = useState(DEFAULT_SETTINGS)
   const [configLoading, setConfigLoading] = useState(true)
 
-  // Einstellungen live aus Firestore
   useEffect(() => {
     const unsub = onSnapshot(doc(db, 'config', 'site'), snap => {
       if (snap.exists()) setSettings(prev => ({ ...prev, ...snap.data() }))
@@ -41,7 +47,21 @@ export function AuthProvider({ children }) {
     return unsub
   }, [])
 
-  // ─── Admin Login ───────────────────────────────────────────────────────────
+  // Rechte eines Rangs aus Firestore laden
+  async function loadRankPermissions(rankLabel) {
+    try {
+      const snap = await getDoc(doc(db, 'config', 'ranks'))
+      if (snap.exists() && Array.isArray(snap.data().list)) {
+        const rank = snap.data().list.find(r => r.label === rankLabel)
+        if (rank?.permissions) return rank.permissions
+      }
+    } catch (e) {
+      console.warn('Rang-Rechte konnten nicht geladen werden:', e.message)
+    }
+    return DEFAULT_MEMBER_PERMISSIONS
+  }
+
+  // ── Admin Login ────────────────────────────────────────────────────────────
   const loginAdmin = useCallback(async (username, password) => {
     if (isLockedOut()) {
       const secs = getLockoutRemaining()
@@ -74,13 +94,11 @@ export function AuthProvider({ children }) {
 
     const remaining = recordFailedAttempt()
     await writeLog(LOG.LOGIN_FAILED, { username })
-    if (remaining <= 0) {
-      return { ok: false, error: 'Zu viele Fehlversuche. Bitte 15 Minuten warten.', locked: true }
-    }
+    if (remaining <= 0) return { ok: false, error: 'Zu viele Fehlversuche. Bitte 15 Minuten warten.', locked: true }
     return { ok: false, error: `Zugang verweigert. Noch ${remaining} Versuch(e).` }
   }, [])
 
-  // ─── Member Login ──────────────────────────────────────────────────────────
+  // ── Member Login ───────────────────────────────────────────────────────────
   const loginMember = useCallback(async (username, password) => {
     if (isLockedOut()) {
       const secs = getLockoutRemaining()
@@ -89,18 +107,13 @@ export function AuthProvider({ children }) {
     }
 
     try {
-      // Suche User in der users-Collection (case-insensitive über lowercase-Feld)
-      const q = query(
-        collection(db, 'users'),
-        where('nameLower', '==', username.toLowerCase())
-      )
+      const q = query(collection(db, 'users'), where('nameLower', '==', username.toLowerCase()))
       const snap = await getDocs(q)
 
       if (!snap.empty) {
         const userDoc = snap.docs[0]
         const data = userDoc.data()
 
-        // Nur aktive User dürfen rein
         if (!data.active) {
           return { ok: false, error: 'Dein Account ist deaktiviert. Kontaktiere einen Admin.' }
         }
@@ -111,12 +124,17 @@ export function AuthProvider({ children }) {
 
         if (passwordMatch) {
           clearLoginAttempts()
+
+          // Rechte aus Rang laden
+          const permissions = await loadRankPermissions(data.rank)
+
           const user = {
-            id: userDoc.id,
-            username: data.name,
-            role: 'member',
-            rank: data.rank,
-            cls: data.cls,
+            id:          userDoc.id,
+            username:    data.name,
+            role:        'member',
+            rank:        data.rank,
+            cls:         data.cls,
+            permissions,
           }
           sessionUser = user
           setCurrentUser(user)
@@ -130,20 +148,15 @@ export function AuthProvider({ children }) {
 
     const remaining = recordFailedAttempt()
     await writeLog(LOG.LOGIN_FAILED, { username, role: 'member' })
-    if (remaining <= 0) {
-      return { ok: false, error: 'Zu viele Fehlversuche. Bitte 15 Minuten warten.', locked: true }
-    }
+    if (remaining <= 0) return { ok: false, error: 'Zu viele Fehlversuche. Bitte 15 Minuten warten.', locked: true }
     return { ok: false, error: `Zugang verweigert. Noch ${remaining} Versuch(e).` }
   }, [])
 
-  // ─── Unified Login (versucht erst Admin, dann Member) ─────────────────────
+  // ── Unified Login ──────────────────────────────────────────────────────────
   const login = useCallback(async (username, password) => {
-    // Erst Admin-Check
     const adminRes = await loginAdmin(username, password)
     if (adminRes.ok) return adminRes
-    // Wenn gesperrt → direkt zurück
     if (adminRes.locked) return adminRes
-    // Sonst Member-Check
     return loginMember(username, password)
   }, [loginAdmin, loginMember])
 
@@ -162,11 +175,8 @@ export function AuthProvider({ children }) {
     const current = (await getDoc(doc(db, 'config', 'adminAuth'))).data() || {}
     const passwordHash = newPassword ? await hashPassword(newPassword) : current.passwordHash
     const username = newUsername || current.username
-
     await setDoc(doc(db, 'config', 'adminAuth'), {
-      username,
-      passwordHash,
-      password: null,
+      username, passwordHash, password: null,
       updatedAt: new Date().toISOString(),
     })
     await writeLog(LOG.ADMIN_CREDS_CHANGED, { newUsername: username }, currentUser?.username)
