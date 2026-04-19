@@ -6,8 +6,9 @@ import AdminLayout      from './pages/AdminLayout'
 import DashboardLayout  from './pages/dashboard/DashboardLayout'
 import CharacterView    from './pages/dashboard/CharacterView'
 import Roster          from './pages/dashboard/Roster'
+import Calendar        from './pages/dashboard/Calendar'
 import { Identity, Texts, Stats, Credentials } from './pages/admin/Settings'
-import Users    from './pages/admin/Users'
+import Events    from './pages/admin/Events'
 import Ranks    from './pages/admin/Ranks'
 import AuditLog from './pages/admin/AuditLog'
 import './styles/global.css'
@@ -28,6 +29,7 @@ export default function App() {
             <Route path="stats"            element={<Stats />} />
             <Route path="users"            element={<Users />} />
             <Route path="ranks"            element={<Ranks />} />
+            <Route path="events"           element={<Events />} />
             <Route path="auditlog"         element={<AuditLog />} />
             <Route path="credentials"      element={<Credentials />} />
           </Route>
@@ -35,7 +37,8 @@ export default function App() {
           {/* ── Member-Dashboard ── */}
           <Route path="/dashboard" element={<DashboardLayout />}>
             <Route index element={<CharacterView />} />
-            <Route path="roster" element={<Roster />} />
+            <Route path="roster"   element={<Roster />} />
+            <Route path="calendar" element={<Calendar />} />
           </Route>
 
           {/* Catch-all → Landing */}
