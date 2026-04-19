@@ -200,7 +200,12 @@ export default function Roster() {
                         {charType === 'main' ? '⭐ MAIN' : '🔄 TWINK'}
                       </span>
                     </div>
-                    <div style={{ fontSize: 11, color: '#4a3820', marginTop: 2 }}>{u.cls}</div>
+                    <div style={{ fontSize: 11, color: "#4a3820", marginTop: 2 }}>
+                      {u.cls}{u.race && ` · ${u.race}`}{u.level && ` · Level ${u.level}`}
+                    </div>
+                    {u.absence && (
+                      <div style={{ fontSize: 10, color: "#e08080", marginTop: 3, fontStyle: "italic" }}>🏖️ Abwesend {u.absence.from}{u.absence.until ? ` – ${u.absence.until}` : ""}</div>
+                    )}
                     {profs.length > 0 && (
                       <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4, marginTop: 6 }}>
                         {profs.map((p, i) => <ProfBadge key={i} prof={p} />)}
