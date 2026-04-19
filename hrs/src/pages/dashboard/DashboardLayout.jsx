@@ -57,8 +57,9 @@ export default function DashboardLayout() {
         {/* Nav Links */}
         <nav style={{ display:'flex', gap:'0.2rem' }}>
           {[
-            { to: '/dashboard',        label: 'Mein Charakter', end: true },
-            { to: '/dashboard/roster', label: 'Roster' },
+            { to: '/dashboard',          label: 'Mein Charakter', end: true },
+            { to: '/dashboard/roster',   label: 'Roster' },
+            { to: '/dashboard/calendar', label: 'Kalender' },
           ].map(({ to, label, end }) => (
             <NavLink key={to} to={to} end={end} style={({ isActive }) => ({
               fontFamily:'Cinzel,serif',
