@@ -1,6 +1,6 @@
 import { createContext, useContext, useState, useEffect, useCallback } from 'react'
 import { db } from '../firebase'
-import { doc, getDoc, setDoc, onSnapshot } from 'firebase/firestore'
+import { doc, getDoc, setDoc, onSnapshot, collection, query, where, getDocs } from 'firebase/firestore'
 import { writeLog, LOG } from '../utils/auditLog'
 import {
   hashPassword, verifyPassword,
@@ -24,8 +24,7 @@ const DEFAULT_SETTINGS = {
   stat3n: 'T6',  stat3l: 'Progress',
 }
 
-// Session-Speicher: bleibt nur für diese Browser-Session, kein localStorage
-// Das ist sicherer als localStorage weil es beim Tab-Schließen weg ist
+// Session-Speicher: bleibt nur für diese Browser-Session
 let sessionUser = null
 
 export function AuthProvider({ children }) {
@@ -42,8 +41,8 @@ export function AuthProvider({ children }) {
     return unsub
   }, [])
 
-  const login = useCallback(async (username, password) => {
-    // Brute-Force Check
+  // ─── Admin Login ───────────────────────────────────────────────────────────
+  const loginAdmin = useCallback(async (username, password) => {
     if (isLockedOut()) {
       const secs = getLockoutRemaining()
       await writeLog(LOG.LOGIN_LOCKED, { username, secondsLeft: secs })
@@ -57,10 +56,9 @@ export function AuthProvider({ children }) {
 
       const data = snap.data()
       const usernameMatch = username === data.username
-      // Passwort wird sicher verglichen (Hash-Vergleich)
       const passwordMatch = data.passwordHash
         ? await verifyPassword(password, data.passwordHash)
-        : password === data.password // Fallback für Ersteinrichtung ohne Hash
+        : password === data.password
 
       if (usernameMatch && passwordMatch) {
         clearLoginAttempts()
@@ -71,7 +69,7 @@ export function AuthProvider({ children }) {
         return { ok: true }
       }
     } catch (err) {
-      console.warn('Login-Fehler:', err.message)
+      console.warn('Admin-Login-Fehler:', err.message)
     }
 
     const remaining = recordFailedAttempt()
@@ -81,6 +79,73 @@ export function AuthProvider({ children }) {
     }
     return { ok: false, error: `Zugang verweigert. Noch ${remaining} Versuch(e).` }
   }, [])
+
+  // ─── Member Login ──────────────────────────────────────────────────────────
+  const loginMember = useCallback(async (username, password) => {
+    if (isLockedOut()) {
+      const secs = getLockoutRemaining()
+      const mins = Math.ceil(secs / 60)
+      return { ok: false, error: `Zu viele Fehlversuche. Bitte ${mins} Minute(n) warten.`, locked: true }
+    }
+
+    try {
+      // Suche User in der users-Collection (case-insensitive über lowercase-Feld)
+      const q = query(
+        collection(db, 'users'),
+        where('nameLower', '==', username.toLowerCase())
+      )
+      const snap = await getDocs(q)
+
+      if (!snap.empty) {
+        const userDoc = snap.docs[0]
+        const data = userDoc.data()
+
+        // Nur aktive User dürfen rein
+        if (!data.active) {
+          return { ok: false, error: 'Dein Account ist deaktiviert. Kontaktiere einen Admin.' }
+        }
+
+        const passwordMatch = data.passwordHash
+          ? await verifyPassword(password, data.passwordHash)
+          : password === data.password
+
+        if (passwordMatch) {
+          clearLoginAttempts()
+          const user = {
+            id: userDoc.id,
+            username: data.name,
+            role: 'member',
+            rank: data.rank,
+            cls: data.cls,
+          }
+          sessionUser = user
+          setCurrentUser(user)
+          await writeLog(LOG.LOGIN, { username: data.name, role: 'member' }, data.name)
+          return { ok: true }
+        }
+      }
+    } catch (err) {
+      console.warn('Member-Login-Fehler:', err.message)
+    }
+
+    const remaining = recordFailedAttempt()
+    await writeLog(LOG.LOGIN_FAILED, { username, role: 'member' })
+    if (remaining <= 0) {
+      return { ok: false, error: 'Zu viele Fehlversuche. Bitte 15 Minuten warten.', locked: true }
+    }
+    return { ok: false, error: `Zugang verweigert. Noch ${remaining} Versuch(e).` }
+  }, [])
+
+  // ─── Unified Login (versucht erst Admin, dann Member) ─────────────────────
+  const login = useCallback(async (username, password) => {
+    // Erst Admin-Check
+    const adminRes = await loginAdmin(username, password)
+    if (adminRes.ok) return adminRes
+    // Wenn gesperrt → direkt zurück
+    if (adminRes.locked) return adminRes
+    // Sonst Member-Check
+    return loginMember(username, password)
+  }, [loginAdmin, loginMember])
 
   const logout = useCallback(async () => {
     if (currentUser) await writeLog(LOG.LOGOUT, {}, currentUser.username)
@@ -101,7 +166,6 @@ export function AuthProvider({ children }) {
     await setDoc(doc(db, 'config', 'adminAuth'), {
       username,
       passwordHash,
-      // Altes Klartext-Passwort-Feld entfernen falls vorhanden
       password: null,
       updatedAt: new Date().toISOString(),
     })
