@@ -25,11 +25,12 @@ const DEFAULT_SETTINGS = {
 }
 
 // Standard-Fallback-Rechte wenn Rang keine Rechte hat
+// Fallback wenn Rang noch keine gespeicherten Rechte hat — alles false
 const DEFAULT_MEMBER_PERMISSIONS = {
   canManageEvents: false,
-  canSignupEvents: true,
-  canViewCalendar: true,
-  canViewRoster:   true,
+  canSignupEvents: false,
+  canViewCalendar: false,
+  canViewRoster:   false,
 }
 
 let sessionUser = null
