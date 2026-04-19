@@ -27,6 +27,7 @@ export default function DashboardLayout() {
     { to: '/dashboard',          label: 'Mein Charakter', end: true,  show: true },
     { to: '/dashboard/roster',   label: 'Roster',         end: false, show: currentUser.role === 'admin' || perms.canViewRoster },
     { to: '/dashboard/calendar', label: 'Kalender',       end: false, show: currentUser.role === 'admin' || perms.canViewCalendar },
+    { to: '/dashboard/dkp',      label: 'DKP',            end: false, show: currentUser.role === 'admin' || perms.canViewDKP },
   ].filter(l => l.show)
 
   async function handleLogout() {
