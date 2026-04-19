@@ -9,10 +9,15 @@ export default function Login() {
   const [error, setError]       = useState('')
   const [busy, setBusy]         = useState(false)
   const [countdown, setCountdown] = useState(0)
-  const { login } = useAuth()
+  const { login, currentUser } = useAuth()
   const nav = useNavigate()
 
-  // Countdown-Timer wenn ausgesperrt
+  // Nach Login: Redirect je nach Rolle
+  useEffect(() => {
+    if (currentUser?.role === 'admin')  nav('/admin',     { replace: true })
+    if (currentUser?.role === 'member') nav('/dashboard', { replace: true })
+  }, [currentUser, nav])
+
   useEffect(() => {
     if (isLockedOut()) setCountdown(getLockoutRemaining())
     const id = setInterval(() => {
@@ -29,7 +34,7 @@ export default function Login() {
     const res = await login(username, password)
     setBusy(false)
     if (res.ok) {
-      nav('/admin', { replace: true })
+      // Redirect übernimmt der useEffect via currentUser.role
     } else {
       setError(res.error)
       if (res.locked) setCountdown(getLockoutRemaining())
@@ -60,8 +65,8 @@ export default function Login() {
           </div>
         ) : (
           <>
-            <label className="field-label">Benutzername</label>
-            <input value={username} onChange={e=>setUsername(e.target.value)} placeholder="Charaktername" style={{ marginBottom:'1.2rem' }} autoComplete="username" />
+            <label className="field-label">Charaktername</label>
+            <input value={username} onChange={e=>setUsername(e.target.value)} placeholder="Dein Charaktername" style={{ marginBottom:'1.2rem' }} autoComplete="username" />
 
             <label className="field-label">Passwort</label>
             <input type="password" value={password} onChange={e=>setPassword(e.target.value)} placeholder="••••••••" style={{ marginBottom:'1.4rem' }} autoComplete="current-password"
