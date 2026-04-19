@@ -12,6 +12,7 @@ const NAV = [
     { path: 'users',    label: 'Benutzer' },
     { path: 'ranks',    label: 'Ränge' },
     { path: 'events',   label: 'Events' },
+    { path: 'dkp',      label: 'DKP' },
   ]},
   { group: 'System', items: [
     { path: 'auditlog',    label: 'Audit-Log' },
@@ -30,7 +31,6 @@ export default function AdminLayout() {
     </div>
   )
 
-  // Schutz: Nicht eingeloggt → Login
   if (!currentUser) return <Navigate to="/login" replace />
 
   const active = location.pathname.split('/').pop()
@@ -42,8 +42,6 @@ export default function AdminLayout() {
 
   return (
     <div style={{ minHeight:'100vh', display:'flex', flexDirection:'column', background:'#0d0a04' }}>
-
-      {/* Topbar */}
       <div style={{ background:'#100c04', borderBottom:'1px solid #2e2210', padding:'.8rem 1.2rem', display:'flex', alignItems:'center', justifyContent:'space-between', flexShrink:0 }}>
         <span style={{ fontFamily:'Cinzel,serif', fontSize:12, color:'#c8a84b', letterSpacing:2 }}>
           ⚙ Admin · High Roller Society
@@ -53,10 +51,7 @@ export default function AdminLayout() {
           <button className="btn-ghost" style={{ fontSize:9, padding:'5px 14px' }} onClick={handleLogout}>Abmelden</button>
         </div>
       </div>
-
       <div style={{ display:'flex', flex:1, minHeight:0 }}>
-
-        {/* Sidebar */}
         <nav style={{ width:165, background:'#0b0804', borderRight:'1px solid #2e2210', padding:'1rem 0', flexShrink:0, overflowY:'auto' }}>
           {NAV.map(group => (
             <div key={group.group}>
@@ -85,8 +80,6 @@ export default function AdminLayout() {
             </div>
           ))}
         </nav>
-
-        {/* Content */}
         <div style={{ flex:1, padding:'1.5rem', overflowY:'auto' }}>
           <Outlet />
         </div>
