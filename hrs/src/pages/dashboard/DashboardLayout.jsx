@@ -23,11 +23,14 @@ export default function DashboardLayout() {
   const perms    = currentUser.permissions || {}
 
   // Nav-Links je nach Rechten einblenden
+  const hasVerwaltung = perms.canManageEvents || perms.canManageDKP
+
   const navLinks = [
-    { to: '/dashboard',          label: 'Mein Charakter', end: true,  show: true },
-    { to: '/dashboard/roster',   label: 'Roster',         end: false, show: currentUser.role === 'admin' || perms.canViewRoster },
-    { to: '/dashboard/calendar', label: 'Kalender',       end: false, show: currentUser.role === 'admin' || perms.canViewCalendar },
-    { to: '/dashboard/dkp',      label: 'DKP',            end: false, show: currentUser.role === 'admin' || perms.canViewDKP },
+    { to: '/dashboard',              label: 'Mein Charakter', end: true,  show: true },
+    { to: '/dashboard/roster',       label: 'Roster',         end: false, show: currentUser.role === 'admin' || perms.canViewRoster },
+    { to: '/dashboard/calendar',     label: 'Kalender',       end: false, show: currentUser.role === 'admin' || perms.canViewCalendar },
+    { to: '/dashboard/dkp',          label: 'DKP',            end: false, show: currentUser.role === 'admin' || perms.canViewDKP },
+    { to: '/dashboard/verwaltung',   label: 'Verwaltung',     end: false, show: hasVerwaltung },
   ].filter(l => l.show)
 
   async function handleLogout() {
