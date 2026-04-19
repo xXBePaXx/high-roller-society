@@ -5,6 +5,7 @@ import Login            from './pages/Login'
 import AdminLayout      from './pages/AdminLayout'
 import DashboardLayout  from './pages/dashboard/DashboardLayout'
 import CharacterView    from './pages/dashboard/CharacterView'
+import Roster          from './pages/dashboard/Roster'
 import { Identity, Texts, Stats, Credentials } from './pages/admin/Settings'
 import Users    from './pages/admin/Users'
 import Ranks    from './pages/admin/Ranks'
@@ -34,6 +35,7 @@ export default function App() {
           {/* ── Member-Dashboard ── */}
           <Route path="/dashboard" element={<DashboardLayout />}>
             <Route index element={<CharacterView />} />
+            <Route path="roster" element={<Roster />} />
           </Route>
 
           {/* Catch-all → Landing */}
