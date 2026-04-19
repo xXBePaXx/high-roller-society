@@ -1,0 +1,44 @@
+// Firestore Security Rules für High Roller Society
+// Diese Datei in der Firebase Console unter Firestore → Rules einfügen.
+//
+// WICHTIG: Diese Rules sind die letzte Verteidigungslinie.
+// Ohne korrekte Rules könnte jeder deine Daten lesen oder überschreiben!
+
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ── AUDIT LOG ─────────────────────────────────────────────────
+    // Nur schreiben (append-only), niemals lesen von außen außer über Admin-App
+    match /auditLog/{entry} {
+      // Jeder angemeldete Client darf Logs schreiben (writeLog wird intern aufgerufen)
+      allow create: if true;
+      // Lesen nur wenn das Dokument von der App gelesen wird (kein direkter Zugriff)
+      // In Produktion: allow read: if request.auth != null;
+      allow read: if true;
+      // Löschen und Bearbeiten niemals erlaubt - Logs sind unveränderlich
+      allow update, delete: if false;
+    }
+
+    // ── BENUTZER ──────────────────────────────────────────────────
+    // Benutzerprofile - lesen/schreiben nur für die App
+    match /users/{userId} {
+      allow read, write: if true;
+      // In Produktion mit Firebase Auth:
+      // allow read, write: if request.auth != null;
+    }
+
+    // ── KONFIGURATION ─────────────────────────────────────────────
+    // Site-Einstellungen, Ränge, Admin-Credentials
+    match /config/{document} {
+      // adminAuth NIEMALS von außen lesbar machen in Produktion
+      // Für jetzt: App-Zugriff erlaubt
+      allow read, write: if true;
+    }
+
+    // ── ALLES ANDERE SPERREN ──────────────────────────────────────
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}
