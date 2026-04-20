@@ -4,7 +4,9 @@ import Landing          from './pages/Landing'
 import Login            from './pages/Login'
 import AdminLayout      from './pages/AdminLayout'
 import DashboardLayout  from './pages/dashboard/DashboardLayout'
+import Dashboard        from './pages/dashboard/Dashboard'
 import CharacterView    from './pages/dashboard/CharacterView'
+import GuildInfo        from './pages/dashboard/GuildInfo'
 import Roster           from './pages/dashboard/Roster'
 import Calendar         from './pages/dashboard/Calendar'
 import DKP              from './pages/dashboard/DKP'
@@ -42,11 +44,13 @@ export default function App() {
 
           {/* ── Member-Dashboard ── */}
           <Route path="/dashboard" element={<DashboardLayout />}>
-            <Route index element={<CharacterView />} />
-            <Route path="roster"   element={<Roster />} />
-            <Route path="calendar" element={<Calendar />} />
-            <Route path="dkp"          element={<DKP />} />
-            <Route path="verwaltung"   element={<Verwaltung />} />
+            <Route index              element={<Dashboard />} />
+            <Route path="charakter"   element={<CharacterView />} />
+            <Route path="info"        element={<GuildInfo />} />
+            <Route path="roster"      element={<Roster />} />
+            <Route path="calendar"    element={<Calendar />} />
+            <Route path="dkp"         element={<DKP />} />
+            <Route path="verwaltung"  element={<Verwaltung />} />
           </Route>
 
           {/* Catch-all → Landing */}
