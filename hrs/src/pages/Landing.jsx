@@ -18,10 +18,14 @@ const GOOGLE_FONTS_URL = {
 
 // Fallback-Defaults falls noch kein Theme gespeichert
 const PHASE_DEFAULTS = {
-  phase1: { accent:'#c8a84b', accentSoft:'#f0d080', accentDim:'#7a6030', accentFade:'#4a3820', accentGhost:'#2e2210', bgDark:'#0d0a04', bgMid:'#1a1208', textColor:'#f0d080', font:'cinzel' },
-  phase2: { accent:'#38b8c8', accentSoft:'#7ae0ee', accentDim:'#2a7a88', accentFade:'#1a4858', accentGhost:'#0e2830', bgDark:'#050e12', bgMid:'#08141a', textColor:'#7ae0ee', font:'cinzel' },
-  phase3: { accent:'#48c848', accentSoft:'#88ee88', accentDim:'#2a7830', accentFade:'#1a3820', accentGhost:'#0e2010', bgDark:'#040a04', bgMid:'#080f08', textColor:'#88ee88', font:'cinzel' },
-  phase4: { accent:'#e87830', accentSoft:'#f8b060', accentDim:'#a04818', accentFade:'#602808', accentGhost:'#381808', bgDark:'#0d0502', bgMid:'#180a04', textColor:'#f8b060', font:'cinzel' },
+  phase1:     { accent:'#c8a84b', accentSoft:'#f0d080', accentDim:'#7a6030', accentFade:'#4a3820', accentGhost:'#2e2210', bgDark:'#0d0a04', bgMid:'#1a1208', textColor:'#f0d080', font:'cinzel' },
+  phase2:     { accent:'#38b8c8', accentSoft:'#7ae0ee', accentDim:'#2a7a88', accentFade:'#1a4858', accentGhost:'#0e2830', bgDark:'#050e12', bgMid:'#08141a', textColor:'#7ae0ee', font:'cinzel' },
+  phase3:     { accent:'#48c848', accentSoft:'#88ee88', accentDim:'#2a7830', accentFade:'#1a3820', accentGhost:'#0e2010', bgDark:'#040a04', bgMid:'#080f08', textColor:'#88ee88', font:'cinzel' },
+  phase4:     { accent:'#e87830', accentSoft:'#f8b060', accentDim:'#a04818', accentFade:'#602808', accentGhost:'#381808', bgDark:'#0d0502', bgMid:'#180a04', textColor:'#f8b060', font:'cinzel' },
+  darkportal: { accent:'#58e830', accentSoft:'#90ff60', accentDim:'#2a6818', accentFade:'#6a1a08', accentGhost:'#3a0e06', bgDark:'#0e0604', bgMid:'#1c0e08', textColor:'#90ff60', font:'cinzel' },
+  custom1:    { accent:'#c8a84b', accentSoft:'#f0d080', accentDim:'#7a6030', accentFade:'#4a3820', accentGhost:'#2e2210', bgDark:'#0d0a04', bgMid:'#1a1208', textColor:'#f0d080', font:'cinzel' },
+  custom2:    { accent:'#a848c8', accentSoft:'#d080f0', accentDim:'#6a3080', accentFade:'#3a1848', accentGhost:'#220e30', bgDark:'#080410', bgMid:'#12081a', textColor:'#d080f0', font:'cinzel' },
+  custom3:    { accent:'#c84848', accentSoft:'#f08080', accentDim:'#803030', accentFade:'#481818', accentGhost:'#300e0e', bgDark:'#100404', bgMid:'#1a0808', textColor:'#f08080', font:'cinzel' },
 }
 
 export default function Landing() {
