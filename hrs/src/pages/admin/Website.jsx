@@ -13,54 +13,14 @@ const FONTS = [
 
 // Alle vordefinierten Themes — unveränderlich als Basis
 const PRESET_THEMES = {
-  phase1: {
-    label: 'Phase 1 — T4 / Karazhan',
-    accent: '#c8a84b', accentSoft: '#f0d080', accentDim: '#7a6030',
-    accentFade: '#4a3820', accentGhost: '#2e2210',
-    bgDark: '#0d0a04', bgMid: '#1a1208', textColor: '#f0d080', font: 'cinzel',
-  },
-  phase2: {
-    label: 'Phase 2 — T5 / SSC & TK',
-    accent: '#38b8c8', accentSoft: '#7ae0ee', accentDim: '#2a7a88',
-    accentFade: '#1a4858', accentGhost: '#0e2830',
-    bgDark: '#050e12', bgMid: '#08141a', textColor: '#7ae0ee', font: 'cinzel',
-  },
-  phase3: {
-    label: 'Phase 3 — T6 / Black Temple',
-    accent: '#48c848', accentSoft: '#88ee88', accentDim: '#2a7830',
-    accentFade: '#1a3820', accentGhost: '#0e2010',
-    bgDark: '#040a04', bgMid: '#080f08', textColor: '#88ee88', font: 'cinzel',
-  },
-  phase4: {
-    label: 'Phase 4 — T6.5 / Sunwell',
-    accent: '#e87830', accentSoft: '#f8b060', accentDim: '#a04818',
-    accentFade: '#602808', accentGhost: '#381808',
-    bgDark: '#0d0502', bgMid: '#180a04', textColor: '#f8b060', font: 'cinzel',
-  },
-  darkportal: {
-    label: 'Dark Portal',
-    accent: '#58e830', accentSoft: '#90ff60', accentDim: '#2a6818',
-    accentFade: '#6a1a08', accentGhost: '#3a0e06',
-    bgDark: '#0e0604', bgMid: '#1c0e08', textColor: '#90ff60', font: 'cinzel',
-  },
-  custom1: {
-    label: 'Custom 1',
-    accent: '#c8a84b', accentSoft: '#f0d080', accentDim: '#7a6030',
-    accentFade: '#4a3820', accentGhost: '#2e2210',
-    bgDark: '#0d0a04', bgMid: '#1a1208', textColor: '#f0d080', font: 'cinzel',
-  },
-  custom2: {
-    label: 'Custom 2',
-    accent: '#a848c8', accentSoft: '#d080f0', accentDim: '#6a3080',
-    accentFade: '#3a1848', accentGhost: '#220e30',
-    bgDark: '#080410', bgMid: '#12081a', textColor: '#d080f0', font: 'cinzel',
-  },
-  custom3: {
-    label: 'Custom 3',
-    accent: '#c84848', accentSoft: '#f08080', accentDim: '#803030',
-    accentFade: '#481818', accentGhost: '#300e0e',
-    bgDark: '#100404', bgMid: '#1a0808', textColor: '#f08080', font: 'cinzel',
-  },
+  phase1:     { label:'Phase 1 — T4 / Karazhan',    accent:'#c8a84b', accentSoft:'#f0d080', accentDim:'#a07840', accentFade:'#4a3820', accentGhost:'#3a2c18', bgDark:'#0d0a04', bgMid:'#1a1208', textColor:'#f0d080', textPrimary:'#e8d090', textSecondary:'#a07840', textMuted:'#5a4828', cardBg:'#120e06', inputBg:'#1a1208', font:'cinzel' },
+  phase2:     { label:'Phase 2 — T5 / SSC & TK',    accent:'#38b8c8', accentSoft:'#7ae0ee', accentDim:'#4a9aaa', accentFade:'#1a4858', accentGhost:'#0e2830', bgDark:'#050e12', bgMid:'#08141a', textColor:'#7ae0ee', textPrimary:'#90d8e8', textSecondary:'#4a9aaa', textMuted:'#2a5868', cardBg:'#0a1820', inputBg:'#08141a', font:'cinzel' },
+  phase3:     { label:'Phase 3 — T6 / Black Temple', accent:'#48c848', accentSoft:'#88ee88', accentDim:'#4a9a4a', accentFade:'#1a3820', accentGhost:'#0e2010', bgDark:'#040a04', bgMid:'#080f08', textColor:'#88ee88', textPrimary:'#80e080', textSecondary:'#4a9a4a', textMuted:'#2a5830', cardBg:'#0a120a', inputBg:'#080f08', font:'cinzel' },
+  phase4:     { label:'Phase 4 — T6.5 / Sunwell',   accent:'#e87830', accentSoft:'#f8b060', accentDim:'#c06828', accentFade:'#602808', accentGhost:'#381808', bgDark:'#0d0502', bgMid:'#180a04', textColor:'#f8b060', textPrimary:'#f0a050', textSecondary:'#c06828', textMuted:'#804020', cardBg:'#160804', inputBg:'#180a04', font:'cinzel' },
+  darkportal: { label:'Dark Portal',                 accent:'#58e830', accentSoft:'#90ff60', accentDim:'#58a830', accentFade:'#6a1a08', accentGhost:'#3a0e06', bgDark:'#0e0604', bgMid:'#1c0e08', textColor:'#90ff60', textPrimary:'#c0f090', textSecondary:'#58a830', textMuted:'#3a6820', cardBg:'#160a06', inputBg:'#1c0e08', font:'cinzel' },
+  custom1:    { label:'Custom 1',                    accent:'#c8a84b', accentSoft:'#f0d080', accentDim:'#a07840', accentFade:'#4a3820', accentGhost:'#3a2c18', bgDark:'#0d0a04', bgMid:'#1a1208', textColor:'#f0d080', textPrimary:'#e8d090', textSecondary:'#a07840', textMuted:'#5a4828', cardBg:'#120e06', inputBg:'#1a1208', font:'cinzel' },
+  custom2:    { label:'Custom 2',                    accent:'#a848c8', accentSoft:'#d080f0', accentDim:'#8048a8', accentFade:'#3a1848', accentGhost:'#220e30', bgDark:'#080410', bgMid:'#12081a', textColor:'#d080f0', textPrimary:'#c070e0', textSecondary:'#8048a8', textMuted:'#4a2868', cardBg:'#100618', inputBg:'#12081a', font:'cinzel' },
+  custom3:    { label:'Custom 3',                    accent:'#c84848', accentSoft:'#f08080', accentDim:'#a04040', accentFade:'#481818', accentGhost:'#300e0e', bgDark:'#100404', bgMid:'#1a0808', textColor:'#f08080', textPrimary:'#e07070', textSecondary:'#a04040', textMuted:'#602828', cardBg:'#160606', inputBg:'#1a0808', font:'cinzel' },
 }
 
 const THEME_GROUPS = [
@@ -378,15 +338,27 @@ export default function Website() {
           </div>
 
           {/* Farben */}
+          <div style={{ fontSize:9, fontFamily:'Cinzel,serif', letterSpacing:2, color:'#3a2c18', textTransform:'uppercase', marginBottom:8 }}>Hintergründe</div>
+          <div style={{ display:'grid', gridTemplateColumns:'repeat(4,1fr)', gap:10, marginBottom:14 }}>
+            <ColorRow label="Hintergrund dunkel"  value={currentStyle.bgDark}   onChange={v => updateStyle('bgDark', v)} />
+            <ColorRow label="Hintergrund mittel"  value={currentStyle.bgMid}    onChange={v => updateStyle('bgMid', v)} />
+            <ColorRow label="Karten-Hintergrund"  value={currentStyle.cardBg || currentStyle.bgMid} onChange={v => updateStyle('cardBg', v)} />
+            <ColorRow label="Input-Hintergrund"   value={currentStyle.inputBg || currentStyle.bgMid} onChange={v => updateStyle('inputBg', v)} />
+          </div>
+          <div style={{ fontSize:9, fontFamily:'Cinzel,serif', letterSpacing:2, color:'#3a2c18', textTransform:'uppercase', marginBottom:8 }}>Akzentfarben</div>
+          <div style={{ display:'grid', gridTemplateColumns:'repeat(4,1fr)', gap:10, marginBottom:14 }}>
+            <ColorRow label="Akzent (Haupt)"      value={currentStyle.accent}      onChange={v => updateStyle('accent', v)} />
+            <ColorRow label="Akzent hell"          value={currentStyle.accentSoft}  onChange={v => updateStyle('accentSoft', v)} />
+            <ColorRow label="Akzent mittel"        value={currentStyle.accentDim}   onChange={v => updateStyle('accentDim', v)} />
+            <ColorRow label="Akzent gedimmt"       value={currentStyle.accentFade}  onChange={v => updateStyle('accentFade', v)} />
+            <ColorRow label="Akzent Schatten"      value={currentStyle.accentGhost} onChange={v => updateStyle('accentGhost', v)} />
+          </div>
+          <div style={{ fontSize:9, fontFamily:'Cinzel,serif', letterSpacing:2, color:'#3a2c18', textTransform:'uppercase', marginBottom:8 }}>Textfarben</div>
           <div style={{ display:'grid', gridTemplateColumns:'repeat(4,1fr)', gap:10, marginBottom:12 }}>
-            <ColorRow label="Hintergrund dunkel" value={currentStyle.bgDark}      onChange={v => updateStyle('bgDark', v)} />
-            <ColorRow label="Hintergrund mittel" value={currentStyle.bgMid}       onChange={v => updateStyle('bgMid', v)} />
-            <ColorRow label="Akzent (Rahmen)"    value={currentStyle.accent}      onChange={v => updateStyle('accent', v)} />
-            <ColorRow label="Akzent hell (Titel)" value={currentStyle.accentSoft} onChange={v => updateStyle('accentSoft', v)} />
-            <ColorRow label="Text / Labels"      value={currentStyle.accentDim}   onChange={v => updateStyle('accentDim', v)} />
-            <ColorRow label="Trennlinien"        value={currentStyle.accentFade}  onChange={v => updateStyle('accentFade', v)} />
-            <ColorRow label="Schatten / Footer"  value={currentStyle.accentGhost} onChange={v => updateStyle('accentGhost', v)} />
-            <ColorRow label="Titelfarbe"         value={currentStyle.textColor}   onChange={v => updateStyle('textColor', v)} />
+            <ColorRow label="Text Haupt"           value={currentStyle.textPrimary   || currentStyle.accentSoft} onChange={v => updateStyle('textPrimary', v)} />
+            <ColorRow label="Text Sekundär"        value={currentStyle.textSecondary || currentStyle.accentDim}  onChange={v => updateStyle('textSecondary', v)} />
+            <ColorRow label="Text gedimmt"         value={currentStyle.textMuted     || currentStyle.accentGhost} onChange={v => updateStyle('textMuted', v)} />
+            <ColorRow label="Titelfarbe"           value={currentStyle.textColor}    onChange={v => updateStyle('textColor', v)} />
           </div>
 
           {/* Schriftart */}
@@ -413,8 +385,8 @@ export default function Website() {
             <div style={{ background:`linear-gradient(180deg,${currentStyle.bgMid},${currentStyle.bgDark})`, padding:'0.8rem 1rem', display:'flex', alignItems:'center', gap:14 }}>
               <div style={{ width:38, height:38, borderRadius:'50%', border:`2px solid ${currentStyle.accent}`, background:`radial-gradient(circle,${currentStyle.bgMid},${currentStyle.bgDark})`, display:'flex', alignItems:'center', justifyContent:'center', fontSize:16, flexShrink:0 }}>🎰</div>
               <div style={{ flex:1 }}>
-                <div style={{ fontFamily: FONTS.find(f=>f.id===currentStyle.font)?.css || "'Cinzel',serif", fontSize:15, color:currentStyle.accentSoft, letterSpacing:1 }}>High Roller Society</div>
-                <div style={{ fontSize:9, color:currentStyle.accentDim, letterSpacing:3, textTransform:'uppercase', marginTop:2 }}>Raiding Guild · Spineshatter EU</div>
+                <div style={{ fontFamily: FONTS.find(f=>f.id===currentStyle.font)?.css || "'Cinzel',serif", fontSize:15, color:currentStyle.textPrimary||currentStyle.accentSoft, letterSpacing:1 }}>High Roller Society</div>
+                <div style={{ fontSize:9, color:currentStyle.textSecondary||currentStyle.accentDim, letterSpacing:3, textTransform:'uppercase', marginTop:2 }}>Raiding Guild · Spineshatter EU</div>
               </div>
               <div style={{ padding:'6px 16px', border:`1px solid ${currentStyle.accent}`, color:currentStyle.accentSoft, background:`linear-gradient(135deg,${currentStyle.accentFade},${currentStyle.accentGhost})`, borderRadius:2, fontSize:10, fontFamily:'Cinzel,serif', letterSpacing:2, textTransform:'uppercase', flexShrink:0 }}>
                 Einloggen
