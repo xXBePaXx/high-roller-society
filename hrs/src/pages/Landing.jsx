@@ -1,6 +1,22 @@
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
 
+
+const FONT_MAP = {
+  cinzel:        "'Cinzel', serif",
+  uncial:        "'Uncial Antiqua', cursive",
+  medievalsharp: "'MedievalSharp', serif",
+  almendra:      "'Almendra', serif",
+  im_fell:       "'IM Fell English', serif",
+}
+
+const GOOGLE_FONTS_URL = {
+  uncial:        'https://fonts.googleapis.com/css2?family=Uncial+Antiqua&display=swap',
+  almendra:      'https://fonts.googleapis.com/css2?family=Almendra:ital,wght@0,400;0,700;1,400&display=swap',
+  im_fell:       'https://fonts.googleapis.com/css2?family=IM+Fell+English:ital@0;1&display=swap',
+  medievalsharp: 'https://fonts.googleapis.com/css2?family=MedievalSharp&display=swap',
+}
+
 // ─── Phasen-Themes ────────────────────────────────────────────────────────────
 const PHASE_THEMES = {
   phase1: {
@@ -65,8 +81,29 @@ export default function Landing() {
   const { settings: s } = useAuth()
   const nav = useNavigate()
 
-  const phase = s.phase || 'phase1'
-  const t     = PHASE_THEMES[phase] || PHASE_THEMES.phase1
+  const phase       = s.phase || 'phase1'
+  const baseTheme   = PHASE_THEMES[phase] || PHASE_THEMES.phase1
+  const customAccent = s.accentColor || ''
+  // Merge: custom accent overrides phase accent where used
+  const t = customAccent ? {
+    ...baseTheme,
+    accent:     customAccent,
+    accentSoft: customAccent,
+    gradBar:    `linear-gradient(90deg,transparent,${customAccent},${customAccent}cc,${customAccent},transparent)`,
+  } : baseTheme
+
+  const titleFont = FONT_MAP[s.font] || FONT_MAP.cinzel
+  const fontUrl   = GOOGLE_FONTS_URL[s.font]
+
+  // Dynamisch Google Font laden
+  if (fontUrl && typeof document !== 'undefined') {
+    const id = `gfont-${s.font}`
+    if (!document.getElementById(id)) {
+      const link = document.createElement('link')
+      link.id = id; link.rel = 'stylesheet'; link.href = fontUrl
+      document.head.appendChild(link)
+    }
+  }
 
   const Corner = ({ style }) => (
     <div style={{ position: 'absolute', width: 28, height: 28, opacity: .35, ...style }} />
@@ -110,7 +147,7 @@ export default function Landing() {
 
         <div style={{ fontSize: 11, letterSpacing: 4, color: t.accentDim, textTransform: 'uppercase', marginBottom: '.3rem' }}>{s.realm}</div>
 
-        <h1 style={{ fontFamily: 'Cinzel,serif', fontSize: 30, fontWeight: 700, color: t.accentSoft, textAlign: 'center', letterSpacing: 2, lineHeight: 1.15, marginBottom: '.2rem' }}>
+        <h1 style={{ fontFamily: titleFont, fontSize: 30, fontWeight: 700, color: t.accentSoft, textAlign: 'center', letterSpacing: 2, lineHeight: 1.15, marginBottom: '.2rem' }}>
           {s.guildName1}
           {s.guildName2 && <><br />{s.guildName2}</>}
         </h1>
