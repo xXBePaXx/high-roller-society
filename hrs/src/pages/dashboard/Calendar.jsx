@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useEvents, EVENT_TYPES, ROLES } from '../../hooks/useEvents'
 import { useAuth } from '../../contexts/AuthContext'
+import { useTheme } from '../../hooks/useTheme'
 
 const CLASS_COLORS = {
   'Death Knight': '#C41E3A', 'Druid': '#FF7C0A', 'Hunter': '#AAD372',
@@ -8,20 +9,20 @@ const CLASS_COLORS = {
   'Rogue': '#FFF468', 'Shaman': '#0070DD', 'Warlock': '#8788EE', 'Warrior': '#C69B3A',
 }
 
-function SectionTitle({ children }) {
+function SectionTitle({ children, t }) {
   return (
     <div style={{
       fontFamily: 'Cinzel,serif', fontSize: 9, letterSpacing: 3,
-      color: '#5a4828', textTransform: 'uppercase', marginBottom: '1rem',
-      paddingBottom: '0.5rem', borderBottom: '1px solid #1e1808',
+      color: t?.accentDim || '#5a4828', textTransform: 'uppercase', marginBottom: '1rem',
+      paddingBottom: '0.5rem', borderBottom: `1px solid ${t?.accentFade || '#1e1808'}`,
     }}>{children}</div>
   )
 }
 
-function Card({ children, style = {} }) {
+function Card({ children, t, style = {} }) {
   return (
     <div style={{
-      background: '#120e06', border: '1px solid #2e2210',
+      background: t?.bgMid || '#120e06', border: `1px solid ${t?.accentFade || '#2e2210'}`,
       borderRadius: 4, padding: '1.4rem', ...style,
     }}>{children}</div>
   )
@@ -39,7 +40,7 @@ function isUpcoming(event) {
   return eventDt >= now
 }
 
-function SignupModal({ event, currentSignup, onSignup, onSignoff, onClose }) {
+function SignupModal({ event, currentSignup, onSignup, onSignoff, onClose, theme }) {
   const [selectedRole, setSelectedRole] = useState(currentSignup?.role || 'dps')
   const [note, setNote]                 = useState(currentSignup?.note || '')
   const [busy, setBusy]                 = useState(false)
@@ -67,21 +68,21 @@ function SignupModal({ event, currentSignup, onSignup, onSignoff, onClose }) {
       zIndex: 200, padding: '1rem',
     }} onClick={e => e.target === e.currentTarget && onClose()}>
       <div style={{
-        background: '#120e06', border: '1px solid #4a3820',
+        background: theme?.bgMid || '#120e06', border: `1px solid ${theme?.accentFade || '#4a3820'}`,
         borderRadius: 4, padding: '2rem', width: '100%', maxWidth: 420,
         position: 'relative',
       }}>
-        <div style={{ position: 'absolute', top: 0, left: '50%', transform: 'translateX(-50%)', width: '60%', height: 2, background: 'linear-gradient(90deg,transparent,#c8a84b,transparent)' }} />
+        <div style={{ position: 'absolute', top: 0, left: '50%', transform: 'translateX(-50%)', width: '60%', height: 2, background: `linear-gradient(90deg,transparent,${theme?.accent || '#c8a84b'},transparent)` }} />
 
         <div style={{ fontSize: 20, marginBottom: '.3rem' }}>{eventType.icon}</div>
-        <h3 style={{ fontFamily: 'Cinzel,serif', fontSize: 16, color: '#f0d080', margin: '0 0 .3rem' }}>{event.title}</h3>
+        <h3 style={{ fontFamily: 'Cinzel,serif', fontSize: 16, color: theme?.accentSoft || '#f0d080', margin: '0 0 .3rem' }}>{event.title}</h3>
         <p style={{ fontSize: 12, color: '#5a4828', fontStyle: 'italic', margin: '0 0 1.5rem' }}>
           {formatDate(event.eventDate)} · {event.eventTime || '—'} Uhr
         </p>
 
         {currentSignup && (
-          <div style={{ background: 'rgba(200,168,75,.06)', border: '1px solid #3a2c18', borderRadius: 3, padding: '0.8rem', marginBottom: '1.2rem', fontSize: 12, color: '#7a6030' }}>
-            Angemeldet als <strong style={{ color: '#c8a84b' }}>{ROLES.find(r => r.id === currentSignup.role)?.label}</strong>
+          <div style={{ background: `${theme?.accent || '#c8a84b'}10`, border: `1px solid ${theme?.accentFade || '#3a2c18'}`, borderRadius: 3, padding: '0.8rem', marginBottom: '1.2rem', fontSize: 12, color: '#7a6030' }}>
+            Angemeldet als <strong style={{ color: theme?.accent || '#c8a84b' }}>{ROLES.find(r => r.id === currentSignup.role)?.label}</strong>
             {currentSignup.note && <div style={{ marginTop: 4, fontStyle: 'italic', color: '#5a4828' }}>Notiz: {currentSignup.note}</div>}
           </div>
         )}
@@ -91,13 +92,13 @@ function SignupModal({ event, currentSignup, onSignup, onSignoff, onClose }) {
           <div style={{ display: 'flex', gap: 8 }}>
             {ROLES.map(r => (
               <button key={r.id} onClick={() => setSelectedRole(r.id)} style={{
-                flex: 1, background: selectedRole === r.id ? 'rgba(200,168,75,.1)' : 'transparent',
-                border: selectedRole === r.id ? '1px solid #c8a84b' : '1px solid #2e2210',
+                flex: 1, background: selectedRole === r.id ? `${theme?.accent || '#c8a84b'}18` : 'transparent',
+                border: selectedRole === r.id ? `1px solid ${theme?.accent || '#c8a84b'}` : `1px solid ${theme?.accentFade || '#2e2210'}`,
                 borderRadius: 3, padding: '0.6rem', cursor: 'pointer', textAlign: 'center',
                 transition: 'all .15s',
               }}>
                 <div style={{ fontSize: 18 }}>{r.icon}</div>
-                <div style={{ fontSize: 10, fontFamily: 'Cinzel,serif', letterSpacing: 1, color: selectedRole === r.id ? '#f0d080' : '#5a4828', marginTop: 3 }}>{r.label}</div>
+                <div style={{ fontSize: 10, fontFamily: 'Cinzel,serif', letterSpacing: 1, color: selectedRole === r.id ? (theme?.accentSoft || '#f0d080') : (theme?.accentDim || '#5a4828'), marginTop: 3 }}>{r.label}</div>
               </button>
             ))}
           </div>
@@ -133,9 +134,10 @@ function SignupModal({ event, currentSignup, onSignup, onSignoff, onClose }) {
   )
 }
 
-function EventCard({ event, currentUser, onSignup, onSignoff }) {
+function EventCard({ event, currentUser, onSignup, onSignoff, t }) {
   const [expanded, setExpanded]   = useState(false)
   const [showModal, setShowModal] = useState(false)
+  const theme = t
 
   const eventType = EVENT_TYPES.find(t => t.id === event.type) || EVENT_TYPES[0]
   const signups   = event.signups || []
@@ -150,9 +152,9 @@ function EventCard({ event, currentUser, onSignup, onSignoff }) {
   return (
     <>
       <div style={{
-        border: `1px solid ${mySignup ? '#3a2c18' : '#1e1808'}`,
-        borderLeft: `3px solid ${mySignup ? '#c8a84b' : eventType.color}`,
-        borderRadius: 3, background: mySignup ? 'rgba(200,168,75,.04)' : '#0d0a04',
+        border: `1px solid ${mySignup ? (t?.accentFade||'#3a2c18') : (t?.bgMid||'#1e1808')}`,
+        borderLeft: `3px solid ${mySignup ? (t?.accent||'#c8a84b') : eventType.color}`,
+        borderRadius: 3, background: mySignup ? `${t?.accent||'#c8a84b'}08` : (t?.bgDark||'#0d0a04'),
         overflow: 'hidden', opacity: upcoming ? 1 : 0.5, transition: 'all .15s',
       }}>
         <div style={{ padding: '0.9rem 1rem', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.8rem' }}
@@ -160,9 +162,9 @@ function EventCard({ event, currentUser, onSignup, onSignoff }) {
           <span style={{ fontSize: 20, flexShrink: 0 }}>{eventType.icon}</span>
           <div style={{ flex: 1 }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
-              <span style={{ fontFamily: 'Cinzel,serif', fontSize: 13, color: '#f0d080', fontWeight: 600 }}>{event.title}</span>
+              <span style={{ fontFamily: 'Cinzel,serif', fontSize: 13, color: t?.accentSoft||'#f0d080', fontWeight: 600 }}>{event.title}</span>
               {mySignup && (
-                <span style={{ fontSize: 9, letterSpacing: 1, fontFamily: 'Cinzel,serif', color: '#c8a84b', background: 'rgba(200,168,75,.15)', padding: '2px 6px', borderRadius: 2 }}>
+                <span style={{ fontSize: 9, letterSpacing: 1, fontFamily: 'Cinzel,serif', color: t?.accent||'#c8a84b', background: `${t?.accent||'#c8a84b'}20`, padding: '2px 6px', borderRadius: 2 }}>
                   ANGEMELDET · {ROLES.find(r => r.id === mySignup.role)?.label.toUpperCase()}
                 </span>
               )}
@@ -170,7 +172,7 @@ function EventCard({ event, currentUser, onSignup, onSignoff }) {
                 <span style={{ fontSize: 9, letterSpacing: 1, fontFamily: 'Cinzel,serif', color: '#8a3020', background: 'rgba(138,48,32,.15)', padding: '2px 6px', borderRadius: 2 }}>VOLL</span>
               )}
             </div>
-            <div style={{ fontSize: 11, color: '#4a3820', marginTop: 2 }}>
+            <div style={{ fontSize: 11, color: t?.accentDim||'#4a3820', marginTop: 2 }}>
               {formatDate(event.eventDate)} · {event.eventTime || '—'} Uhr
               <span style={{ margin: '0 6px', color: '#2e2210' }}>·</span>
               {signups.length}{event.maxSignups > 0 ? `/${event.maxSignups}` : ''} Anmeldungen
@@ -184,16 +186,16 @@ function EventCard({ event, currentUser, onSignup, onSignoff }) {
               {mySignup ? 'Ändern' : 'Anmelden'}
             </button>
           )}
-          <span style={{ color: '#3a2c18', fontSize: 10, flexShrink: 0 }}>{expanded ? '▲' : '▼'}</span>
+          <span style={{ color: t?.accentGhost||'#3a2c18', fontSize: 10, flexShrink: 0 }}>{expanded ? '▲' : '▼'}</span>
         </div>
 
         {expanded && (
-          <div style={{ padding: '0 1rem 1rem', borderTop: '1px solid #1e1808' }}>
+          <div style={{ padding: '0 1rem 1rem', borderTop: `1px solid ${t?.accentFade||'#1e1808'}` }}>
             {event.description && (
-              <p style={{ fontSize: 12, color: '#5a4828', fontStyle: 'italic', margin: '0.8rem 0' }}>{event.description}</p>
+              <p style={{ fontSize: 12, color: t?.accentDim||'#5a4828', fontStyle: 'italic', margin: '0.8rem 0' }}>{event.description}</p>
             )}
             {signups.length === 0 ? (
-              <div style={{ fontSize: 12, color: '#3a2c18', fontStyle: 'italic', padding: '0.5rem 0' }}>Noch keine Anmeldungen.</div>
+              <div style={{ fontSize: 12, color: t?.accentGhost||'#3a2c18', fontStyle: 'italic', padding: '0.5rem 0' }}>Noch keine Anmeldungen.</div>
             ) : (
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 8, marginTop: '0.8rem' }}>
                 {[
@@ -226,7 +228,7 @@ function EventCard({ event, currentUser, onSignup, onSignoff }) {
       </div>
 
       {showModal && (
-        <SignupModal event={event} currentSignup={mySignup} onSignup={onSignup} onSignoff={onSignoff} onClose={() => setShowModal(false)} />
+        <SignupModal event={event} currentSignup={mySignup} onSignup={onSignup} onSignoff={onSignoff} onClose={() => setShowModal(false)} theme={t} />
       )}
     </>
   )
@@ -244,6 +246,7 @@ export default function Calendar() {
   }
   const { events, loading, signUp, signOff } = useEvents()
   const { currentUser } = useAuth()
+  const t = useTheme()
   const [showPast, setShowPast] = useState(false)
 
   const upcoming = events.filter(isUpcoming)
@@ -251,40 +254,40 @@ export default function Calendar() {
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-      <Card>
+      <Card t={t}>
         <div style={{ display: 'flex', alignItems: 'baseline', gap: '1rem' }}>
-          <h1 style={{ fontFamily: 'Cinzel,serif', fontSize: 20, fontWeight: 600, color: '#f0d080', margin: 0, letterSpacing: 1 }}>Raid-Kalender</h1>
-          <span style={{ fontFamily: 'Cinzel,serif', fontSize: 10, color: '#5a4828', letterSpacing: 2 }}>HIGH ROLLER SOCIETY</span>
+          <h1 style={{ fontFamily: 'Cinzel,serif', fontSize: 20, fontWeight: 600, color: t.accentSoft, margin: 0, letterSpacing: 1 }}>Raid-Kalender</h1>
+          <span style={{ fontFamily: 'Cinzel,serif', fontSize: 10, color: t.accentDim, letterSpacing: 2 }}>HIGH ROLLER SOCIETY</span>
         </div>
         <div style={{ marginTop: '0.6rem', fontSize: 12, color: '#3a2c18', fontStyle: 'italic' }}>
           {upcoming.length === 0 ? 'Keine bevorstehenden Events.' : `${upcoming.length} bevorstehende${upcoming.length === 1 ? 's Event' : ' Events'}`}
         </div>
       </Card>
 
-      <Card>
-        <SectionTitle>Bevorstehende Events</SectionTitle>
+      <Card t={t}>
+        <SectionTitle t={t}>Bevorstehende Events</SectionTitle>
         {loading ? (
-          <div style={{ textAlign: 'center', padding: '2rem', color: '#5a4828', fontStyle: 'italic' }}>Lade Events...</div>
+          <div style={{ textAlign: 'center', padding: '2rem', color: t.accentDim, fontStyle: 'italic' }}>Lade Events...</div>
         ) : upcoming.length === 0 ? (
-          <div style={{ textAlign: 'center', padding: '2rem', color: '#3a2c18', fontStyle: 'italic' }}>Keine bevorstehenden Events geplant.</div>
+          <div style={{ textAlign: 'center', padding: '2rem', color: t.accentGhost, fontStyle: 'italic' }}>Keine bevorstehenden Events geplant.</div>
         ) : (
           <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-            {upcoming.map(event => <EventCard key={event.id} event={event} currentUser={currentUser} onSignup={signUp} onSignoff={signOff} />)}
+            {upcoming.map(event => <EventCard key={event.id} event={event} currentUser={currentUser} onSignup={signUp} onSignoff={signOff} t={t} />)}
           </div>
         )}
       </Card>
 
       {past.length > 0 && (
-        <Card>
+        <Card t={t}>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: showPast ? '1rem' : 0 }}>
-            <SectionTitle>Vergangene Events ({past.length})</SectionTitle>
+            <SectionTitle t={t}>Vergangene Events ({past.length})</SectionTitle>
             <button className="btn-ghost" style={{ fontSize: 10, marginTop: -8 }} onClick={() => setShowPast(v => !v)}>
               {showPast ? 'Ausblenden' : 'Anzeigen'}
             </button>
           </div>
           {showPast && (
             <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-              {past.map(event => <EventCard key={event.id} event={event} currentUser={currentUser} onSignup={signUp} onSignoff={signOff} />)}
+              {past.map(event => <EventCard key={event.id} event={event} currentUser={currentUser} onSignup={signUp} onSignoff={signOff} t={t} />)}
             </div>
           )}
         </Card>
