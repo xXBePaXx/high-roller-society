@@ -115,38 +115,60 @@ export function AuthProvider({ children }) {
 
         if (passwordMatch) {
           clearLoginAttempts()
-          const permissions = await loadRankPermissions(data.rank)
 
-          // Neues System: characters-Array vorhanden?
-          const characters = data.characters || null
+          // Charaktere laden — neues System hat characters-Array
+          // Altes System: einzelner Charakter aus top-level Feldern rekonstruieren
+          let characters = data.characters || null
+          if (!characters || characters.length === 0) {
+            // Altes System — einzelnen Charakter aus Feldern bauen
+            characters = [{
+              name:          data.name,
+              cls:           data.cls || 'Warrior',
+              race:          data.race || '',
+              level:         data.level || 70,
+              characterType: data.characterType || 'main',
+              professions:   data.professions || [],
+              absence:       data.absence || null,
+              rank:          data.rank, // Rang auch pro Charakter
+            }]
+          }
 
-          if (characters && characters.length > 1) {
+          // Sicherstellen dass jeder Charakter einen Rang hat
+          characters = characters.map(char => ({
+            ...char,
+            rank: char.rank || data.rank,
+          }))
+
+          // Permissions für den Account-Rang laden (Fallback)
+          const accountPermissions = await loadRankPermissions(data.rank)
+
+          if (characters.length > 1) {
             // Mehrere Charaktere → Auswahl nötig
             setPendingAccount({
-              accountId:   userDoc.id,
-              username:    data.username || data.name,
-              rank:        data.rank,
-              permissions,
+              accountId:        userDoc.id,
+              username:         data.username || data.name,
+              rank:             data.rank,
+              accountPermissions,
               characters,
             })
             await writeLog(LOG.LOGIN, { username: data.username || data.name, step: 'char-select' }, data.username || data.name)
             return { ok: true, needsCharSelect: true }
           }
 
-          // Einzelner Charakter oder altes System → direkt einloggen
-          const char = characters?.[0] || null
+          // Einzelner Charakter → direkt einloggen
+          const char = characters[0]
+          const charPerms = char.rank ? await loadRankPermissions(char.rank) : accountPermissions
           const user = {
-            id:           userDoc.id,
-            username:     data.username || data.name,
-            role:         'member',
-            rank:         data.rank,
-            cls:          char?.cls || data.cls,
-            race:         char?.race || data.race,
-            permissions,
-            // Neues System
-            characters:   characters || null,
+            id:            userDoc.id,
+            username:      data.username || data.name,
+            role:          'member',
+            rank:          char.rank || data.rank,
+            cls:           char.cls,
+            race:          char.race,
+            permissions:   charPerms,
+            characters,
             activeCharIdx: 0,
-            activeChar:   char || null,
+            activeChar:    char,
           }
           sessionUser = user; setCurrentUser(user)
           await writeLog(LOG.LOGIN, { username: user.username, role: 'member' }, user.username)
@@ -160,18 +182,22 @@ export function AuthProvider({ children }) {
   }, [])
 
   // ── Charakter auswählen — funktioniert beim Login UND mid-session ──────────
-  const selectCharacter = useCallback((charIdx) => {
+  const selectCharacter = useCallback(async (charIdx) => {
     // Nach Login (pendingAccount gesetzt)
     if (pendingAccount) {
       const char = pendingAccount.characters[charIdx]
+      const charRank = char.rank || pendingAccount.rank
+      const permissions = char.rank
+        ? await loadRankPermissions(char.rank)
+        : pendingAccount.accountPermissions
       const user = {
         id:            pendingAccount.accountId,
         username:      pendingAccount.username,
         role:          'member',
-        rank:          pendingAccount.rank,
+        rank:          charRank,
         cls:           char.cls,
         race:          char.race,
-        permissions:   pendingAccount.permissions,
+        permissions,
         characters:    pendingAccount.characters,
         activeCharIdx: charIdx,
         activeChar:    char,
@@ -183,10 +209,16 @@ export function AuthProvider({ children }) {
     // Mid-session (aus dem Dashboard-Dropdown)
     if (currentUser?.characters) {
       const char = currentUser.characters[charIdx]
+      const charRank = char.rank || currentUser.rank
+      const permissions = char.rank
+        ? await loadRankPermissions(char.rank)
+        : currentUser.permissions
       const user = {
         ...currentUser,
+        rank:          charRank,
         cls:           char.cls,
         race:          char.race,
+        permissions,
         activeCharIdx: charIdx,
         activeChar:    char,
       }
