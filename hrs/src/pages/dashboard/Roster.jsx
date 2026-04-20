@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { useUsers } from '../../hooks/useUsers'
+import { useTheme } from '../../hooks/useTheme'
 import { PRIMARY_PROFS, SECONDARY_PROFS } from '../../hooks/useMemberData'
 
 const CLASS_COLORS = {
@@ -14,12 +15,12 @@ const CLASS_ICONS = {
   'Warlock': '🔥', 'Warrior': '🛡️',
 }
 
-function SectionTitle({ children }) {
+function SectionTitle({ children, t }) {
   return (
     <div style={{
       fontFamily: 'Cinzel,serif', fontSize: 9, letterSpacing: 3,
-      color: '#5a4828', textTransform: 'uppercase', marginBottom: '1rem',
-      paddingBottom: '0.5rem', borderBottom: '1px solid #1e1808',
+      color: t?.accentDim||'#5a4828', textTransform: 'uppercase', marginBottom: '1rem',
+      paddingBottom: '0.5rem', borderBottom: `1px solid ${t?.accentFade||'#1e1808'}`,
     }}>{children}</div>
   )
 }
@@ -45,6 +46,7 @@ function ProfBadge({ prof }) {
 
 export default function Roster() {
   const { users, loading } = useUsers()
+  const t = useTheme()
   const [search, setSearch] = useState('')
   const [filterClass, setFilterClass] = useState('')
   const [filterType, setFilterType] = useState('') // '' | 'main' | 'twink'
@@ -78,15 +80,15 @@ export default function Roster() {
 
       {/* Header */}
       <div style={{
-        background: '#120e06', border: '1px solid #2e2210',
+        background: t.bgMid, border: `1px solid ${t.accentFade}`,
         borderRadius: 4, padding: '1.4rem',
       }}>
         <div style={{ display: 'flex', alignItems: 'baseline', gap: '1rem', marginBottom: '0.3rem' }}>
           <h1 style={{
             fontFamily: 'Cinzel,serif', fontSize: 20, fontWeight: 600,
-            color: '#f0d080', margin: 0, letterSpacing: 1,
+            color: t.accentSoft, margin: 0, letterSpacing: 1,
           }}>Gilden-Roster</h1>
-          <span style={{ fontFamily: 'Cinzel,serif', fontSize: 10, color: '#5a4828', letterSpacing: 2 }}>
+          <span style={{ fontFamily: 'Cinzel,serif', fontSize: 10, color: t.accentDim, letterSpacing: 2 }}>
             HIGH ROLLER SOCIETY
           </span>
         </div>
@@ -97,8 +99,8 @@ export default function Roster() {
             { label: 'Twinks', value: twinkCount },
           ].map(s => (
             <div key={s.label}>
-              <span style={{ fontFamily: 'Cinzel,serif', fontSize: 16, color: '#c8a84b' }}>{s.value}</span>
-              <span style={{ fontSize: 11, color: '#3a2c18', marginLeft: 6 }}>{s.label}</span>
+              <span style={{ fontFamily: 'Cinzel,serif', fontSize: 16, color: t.accent }}>{s.value}</span>
+              <span style={{ fontSize: 11, color: t.accentGhost, marginLeft: 6 }}>{s.label}</span>
             </div>
           ))}
         </div>
@@ -106,7 +108,7 @@ export default function Roster() {
 
       {/* Filter */}
       <div style={{
-        background: '#120e06', border: '1px solid #2e2210',
+        background: t.bgMid, border: `1px solid ${t.accentFade}`,
         borderRadius: 4, padding: '1rem 1.4rem',
         display: 'flex', gap: 10, flexWrap: 'wrap', alignItems: 'center',
       }}>
@@ -135,17 +137,17 @@ export default function Roster() {
 
       {/* Mitgliederliste */}
       <div style={{
-        background: '#120e06', border: '1px solid #2e2210',
+        background: t.bgMid, border: `1px solid ${t.accentFade}`,
         borderRadius: 4, padding: '1.4rem',
       }}>
-        <SectionTitle>Mitglieder · {sorted.length} Ergebnisse</SectionTitle>
+        <SectionTitle t={t}>Mitglieder · {sorted.length} Ergebnisse</SectionTitle>
 
         {loading ? (
-          <div style={{ textAlign: 'center', padding: '3rem', color: '#5a4828', fontStyle: 'italic' }}>
+          <div style={{ textAlign: 'center', padding: '3rem', color: t.accentDim, fontStyle: 'italic' }}>
             Lade Roster...
           </div>
         ) : sorted.length === 0 ? (
-          <div style={{ textAlign: 'center', padding: '3rem', color: '#3a2c18', fontStyle: 'italic' }}>
+          <div style={{ textAlign: 'center', padding: '3rem', color: t.accentGhost, fontStyle: 'italic' }}>
             Keine Mitglieder gefunden.
           </div>
         ) : (
@@ -164,16 +166,16 @@ export default function Roster() {
                   alignItems: 'start',
                   padding: '0.9rem 0.8rem',
                   borderRadius: 3,
-                  borderBottom: '1px solid #1a1208',
+                  borderBottom: `1px solid ${t.accentFade}`,
                   transition: 'background .15s',
                 }}
-                  onMouseEnter={e => e.currentTarget.style.background = 'rgba(200,168,75,.03)'}
+                  onMouseEnter={e => e.currentTarget.style.background = `${t.accent}06`}
                   onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
                 >
                   {/* Klassen-Icon */}
                   <div style={{
                     width: 36, height: 36, borderRadius: 3,
-                    background: '#0d0a04',
+                    background: t.bgDark,
                     border: `1px solid ${clsColor}30`,
                     display: 'flex', alignItems: 'center', justifyContent: 'center',
                     fontSize: 18, flexShrink: 0,
@@ -189,18 +191,18 @@ export default function Roster() {
                         fontWeight: 600, color: clsColor,
                       }}>{u.name}</span>
                       <span style={{
-                        fontSize: 10, color: '#4a3820',
+                        fontSize: 10, color: t.accentGhost,
                         fontFamily: 'Cinzel,serif', letterSpacing: 1,
                       }}>{u.rank}</span>
                       <span style={{
                         fontSize: 9, letterSpacing: 1,
                         fontFamily: 'Cinzel,serif',
-                        color: charType === 'main' ? '#c8a84b' : '#4a3820',
+                        color: charType === 'main' ? t.accent : t.accentGhost,
                       }}>
                         {charType === 'main' ? '⭐ MAIN' : '🔄 TWINK'}
                       </span>
                     </div>
-                    <div style={{ fontSize: 11, color: "#4a3820", marginTop: 2 }}>
+                    <div style={{ fontSize: 11, color: t.accentGhost, marginTop: 2 }}>
                       {u.cls}{u.race && ` · ${u.race}`}{u.level && ` · Level ${u.level}`}
                     </div>
                     {u.absence && (
@@ -215,7 +217,7 @@ export default function Roster() {
 
                   {/* Rechts: Kontakt-Hinweis */}
                   <div style={{ textAlign: 'right', flexShrink: 0 }}>
-                    <div style={{ fontSize: 10, color: '#2e2210', fontStyle: 'italic' }}>
+                    <div style={{ fontSize: 10, color: t.accentGhost, fontStyle: 'italic' }}>
                       /w {u.name}
                     </div>
                   </div>
