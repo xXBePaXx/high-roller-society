@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { Outlet, NavLink, useNavigate } from 'react-router-dom'
 import { useAuth } from '../../contexts/AuthContext'
 import { useTheme } from '../../hooks/useTheme'
@@ -10,7 +10,7 @@ const CLASS_COLORS = {
 }
 
 export default function DashboardLayout() {
-  const { currentUser, logout } = useAuth()
+  const { currentUser, logout, selectCharacter } = useAuth()
   const nav = useNavigate()
   const t   = useTheme()
 
@@ -21,6 +21,7 @@ export default function DashboardLayout() {
 
   if (!currentUser) return null
 
+  const [charMenuOpen, setCharMenuOpen] = useState(false)
   const clsColor = CLASS_COLORS[currentUser.cls] || t.accent
   const perms    = currentUser.permissions || {}
   const hasVerwaltung = perms.canManageEvents || perms.canManageDKP
@@ -74,16 +75,79 @@ export default function DashboardLayout() {
           ))}
         </nav>
 
-        {/* User-Badge + Logout */}
-        <div style={{ display:'flex', alignItems:'center', gap:'0.6rem', marginLeft:'auto' }}>
-          <div style={{ textAlign:'right' }}>
-            <div style={{ fontFamily:'Cinzel,serif', fontSize:11, color:clsColor, letterSpacing:1 }}>
-              {currentUser.username}
+        {/* User-Badge + Char-Switcher + Logout */}
+        <div style={{ display:'flex', alignItems:'center', gap:'0.6rem', marginLeft:'auto', position:'relative' }}>
+
+          {/* Charakter-Switcher */}
+          {currentUser.characters && currentUser.characters.length > 1 ? (
+            <div style={{ position:'relative' }}>
+              <button onClick={() => setCharMenuOpen(v => !v)} style={{
+                display:'flex', alignItems:'center', gap:6,
+                background: charMenuOpen ? `${t.accent}12` : 'transparent',
+                border:`1px solid ${charMenuOpen ? t.accent : t.accentFade}`,
+                borderRadius:2, padding:'4px 10px', cursor:'pointer', transition:'all .15s',
+              }}>
+                <div style={{ textAlign:'right' }}>
+                  <div style={{ fontFamily:'Cinzel,serif', fontSize:11, color:clsColor, letterSpacing:1 }}>
+                    {currentUser.activeChar?.name || currentUser.username}
+                  </div>
+                  <div style={{ fontSize:9, color:t.accentDim, letterSpacing:1 }}>
+                    {currentUser.rank} · {currentUser.activeChar?.cls || currentUser.cls}
+                  </div>
+                </div>
+                <span style={{ color:t.accentFade, fontSize:9 }}>{charMenuOpen ? '▲' : '▼'}</span>
+              </button>
+
+              {charMenuOpen && (
+                <div style={{
+                  position:'absolute', top:'calc(100% + 6px)', right:0, zIndex:200,
+                  background:t.cardBg, border:`1px solid ${t.accentFade}`,
+                  borderRadius:3, minWidth:180, boxShadow:`0 8px 24px ${t.bgDark}`,
+                  overflow:'hidden',
+                }}>
+                  <div style={{ padding:'6px 10px', fontSize:8, fontFamily:'Cinzel,serif', letterSpacing:2, color:t.textMuted, textTransform:'uppercase', borderBottom:`1px solid ${t.accentFade}` }}>
+                    Charakter wählen
+                  </div>
+                  {currentUser.characters.map((char, idx) => {
+                    const isActive = idx === currentUser.activeCharIdx
+                    const cc = CLASS_COLORS[char.cls] || t.accent
+                    const ci = { 'Death Knight':'💀','Druid':'🌙','Hunter':'🏹','Mage':'🔮','Paladin':'⚔️','Priest':'✨','Rogue':'🗡️','Shaman':'⚡','Warlock':'🔥','Warrior':'🛡️' }[char.cls] || '⚔️'
+                    return (
+                      <button key={idx} onClick={() => { selectCharacter(idx); setCharMenuOpen(false) }} style={{
+                        display:'flex', alignItems:'center', gap:8, width:'100%',
+                        padding:'8px 10px', background: isActive ? `${t.accent}10` : 'transparent',
+                        border:'none', borderBottom:`1px solid ${t.accentFade}40`,
+                        cursor:'pointer', textAlign:'left', transition:'background .15s',
+                      }}
+                        onMouseEnter={e => { if(!isActive) e.currentTarget.style.background=`${t.accent}08` }}
+                        onMouseLeave={e => { if(!isActive) e.currentTarget.style.background='transparent' }}
+                      >
+                        <span style={{ fontSize:16 }}>{ci}</span>
+                        <div style={{ flex:1 }}>
+                          <div style={{ fontFamily:'Cinzel,serif', fontSize:11, color: isActive ? t.accentSoft : cc }}>{char.name}</div>
+                          <div style={{ fontSize:9, color:t.textMuted, marginTop:1 }}>
+                            {char.cls} · {char.characterType === 'main' ? '⭐ Main' : '🔄 Twink'}
+                          </div>
+                        </div>
+                        {isActive && <span style={{ fontSize:9, color:t.accent }}>✓</span>}
+                      </button>
+                    )
+                  })}
+                </div>
+              )}
             </div>
-            <div style={{ fontSize:10, color:t.accentDim, letterSpacing:1 }}>
-              {currentUser.rank || 'Mitglied'}
+          ) : (
+            /* Einzelner Charakter — normaler Badge */
+            <div style={{ textAlign:'right' }}>
+              <div style={{ fontFamily:'Cinzel,serif', fontSize:11, color:clsColor, letterSpacing:1 }}>
+                {currentUser.activeChar?.name || currentUser.username}
+              </div>
+              <div style={{ fontSize:10, color:t.accentDim, letterSpacing:1 }}>
+                {currentUser.rank || 'Mitglied'}
+              </div>
             </div>
-          </div>
+          )}
+
           <button onClick={handleLogout} style={{
             background:'transparent', border:`1px solid ${t.accentFade}`,
             color:t.accentDim, fontSize:10, fontFamily:'Cinzel,serif',
