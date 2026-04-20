@@ -205,12 +205,13 @@ export default function Users() {
 
   const filtered = users.filter(u => [u.name,u.rank,u.cls].some(v=>v?.toLowerCase().includes(search.toLowerCase())))
 
-  function openAdd() { setErr(''); setForm({ name:'', password:'', rank:ranks[ranks.length-1]?.label||'Rookie', cls:'Warrior' }); setModal('add') }
+  function openAdd() { setErr(''); setForm({ username:'', charName:'', password:'', rank:ranks[ranks.length-1]?.label||'Rookie', cls:'Warrior' }); setModal('add') }
   async function handleOk() {
     setErr(''); setBusy(true)
     try {
       if (modal==='add') {
-        if (!form.name?.trim()) { setErr('Charaktername fehlt.'); setBusy(false); return }
+        if (!form.username?.trim()) { setErr('Benutzername fehlt.'); setBusy(false); return }
+        if (!form.charName?.trim()) { setErr('Charaktername fehlt.'); setBusy(false); return }
         if (!form.password||form.password.length<6) { setErr('Passwort muss mind. 6 Zeichen haben.'); setBusy(false); return }
         await addUser(form)
       }
@@ -246,8 +247,8 @@ export default function Users() {
                     <span style={{ fontSize:11, color:u.active?'#4a9a5a':t.accentDim }}>{u.active?'Aktiv':'Inaktiv'}</span>
                     {u.absence && <span style={{ fontSize:9, color:'#e08080', marginLeft:6 }}>🏖️</span>}
                   </td>
-                  <td style={{ padding:'.65rem .8rem', fontWeight:500, color:CLASS_COLORS[u.cls]||t.accentSoft, fontFamily:'Cinzel,serif', fontSize:12 }}>{u.name}</td>
-                  <td style={{ padding:'.65rem .8rem', fontSize:11, color:t.textSecondary }}>{u.cls}{u.race?` · ${u.race}`:''}{u.level?` · Lvl ${u.level}`:''}</td>
+                  <td style={{ padding:'.65rem .8rem', fontWeight:500, color:t.accentSoft, fontFamily:'Cinzel,serif', fontSize:12 }}>{u.username||u.name}<div style={{ fontSize:10, color:t.textMuted, fontWeight:400, marginTop:1 }}>{u.characters?.map(c=>c.name).join(', ')||''}</div></td>
+                  <td style={{ padding:'.65rem .8rem', fontSize:11, color:t.textSecondary }}>{u.characters?`${u.characters.length} Charakter${u.characters.length!==1?'e':''}`:u.cls}</td>
                   <td style={{ padding:'.65rem .8rem', fontSize:12, color:t.accentDim }}>{u.rank}</td>
                   <td style={{ padding:'.65rem .8rem', color:t.textMuted, fontSize:11, whiteSpace:'nowrap' }}>{u.createdAt?.toDate?u.createdAt.toDate().toLocaleDateString('de-DE'):'—'}</td>
                   <td style={{ padding:'.65rem .8rem', whiteSpace:'nowrap' }}>
@@ -265,7 +266,8 @@ export default function Users() {
 
       {modal==='add' && (
         <Modal title="Neuen Benutzer anlegen" onClose={()=>setModal(null)} onOk={handleOk} okLabel={busy?'Anlegen...':'Anlegen'}>
-          <div className="field-group"><label className="field-label">Charaktername</label><input value={form.name} onChange={e=>setForm({...form,name:e.target.value})} placeholder="z.B. Thunderstrike" autoComplete="off" /></div>
+          <div className="field-group"><label className="field-label">Benutzername (Login)</label><input value={form.username} onChange={e=>setForm({...form,username:e.target.value})} placeholder="z.B. Reisebüro" autoComplete="off" /></div>
+          <div className="field-group"><label className="field-label">Charakter-Name (Ingame)</label><input value={form.charName} onChange={e=>setForm({...form,charName:e.target.value})} placeholder="z.B. Thunderstrike" autoComplete="off" /></div>
           <div className="field-group"><label className="field-label">Passwort (mind. 6 Zeichen)</label><input type="password" value={form.password} onChange={e=>setForm({...form,password:e.target.value})} placeholder="••••••••" autoComplete="new-password" /></div>
           <div className="field-group"><label className="field-label">Rang</label><select value={form.rank} onChange={e=>setForm({...form,rank:e.target.value})}>{ranks.map(r=><option key={r.id} value={r.label}>{r.label}</option>)}</select></div>
           <div className="field-group"><label className="field-label">Klasse</label><select value={form.cls} onChange={e=>setForm({...form,cls:e.target.value})}>{WOW_CLASSES.map(c=><option key={c} value={c}>{c}</option>)}</select></div>
