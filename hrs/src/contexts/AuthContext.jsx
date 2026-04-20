@@ -159,25 +159,40 @@ export function AuthProvider({ children }) {
     return { ok: false, error: `Zugang verweigert. Noch ${remaining} Versuch(e).` }
   }, [])
 
-  // ── Charakter auswählen (nach Login mit mehreren Chars) ────────────────────
+  // ── Charakter auswählen — funktioniert beim Login UND mid-session ──────────
   const selectCharacter = useCallback((charIdx) => {
-    if (!pendingAccount) return
-    const char = pendingAccount.characters[charIdx]
-    const user = {
-      id:            pendingAccount.accountId,
-      username:      pendingAccount.username,
-      role:          'member',
-      rank:          pendingAccount.rank,
-      cls:           char.cls,
-      race:          char.race,
-      permissions:   pendingAccount.permissions,
-      characters:    pendingAccount.characters,
-      activeCharIdx: charIdx,
-      activeChar:    char,
+    // Nach Login (pendingAccount gesetzt)
+    if (pendingAccount) {
+      const char = pendingAccount.characters[charIdx]
+      const user = {
+        id:            pendingAccount.accountId,
+        username:      pendingAccount.username,
+        role:          'member',
+        rank:          pendingAccount.rank,
+        cls:           char.cls,
+        race:          char.race,
+        permissions:   pendingAccount.permissions,
+        characters:    pendingAccount.characters,
+        activeCharIdx: charIdx,
+        activeChar:    char,
+      }
+      sessionUser = user; setCurrentUser(user)
+      setPendingAccount(null)
+      return
     }
-    sessionUser = user; setCurrentUser(user)
-    setPendingAccount(null)
-  }, [pendingAccount])
+    // Mid-session (aus dem Dashboard-Dropdown)
+    if (currentUser?.characters) {
+      const char = currentUser.characters[charIdx]
+      const user = {
+        ...currentUser,
+        cls:           char.cls,
+        race:          char.race,
+        activeCharIdx: charIdx,
+        activeChar:    char,
+      }
+      sessionUser = user; setCurrentUser(user)
+    }
+  }, [pendingAccount, currentUser])
 
   const cancelCharSelect = useCallback(() => setPendingAccount(null), [])
 
