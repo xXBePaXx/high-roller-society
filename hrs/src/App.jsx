@@ -9,7 +9,7 @@ import Roster           from './pages/dashboard/Roster'
 import Calendar         from './pages/dashboard/Calendar'
 import DKP              from './pages/dashboard/DKP'
 import Verwaltung       from './pages/dashboard/Verwaltung'
-import { Identity, Texts, Stats, Credentials } from './pages/admin/Settings'
+import { Identity, Texts, Stats, Theme, Credentials } from './pages/admin/Settings'
 import Events           from './pages/admin/Events'
 import Users            from './pages/admin/Users'
 import Ranks            from './pages/admin/Ranks'
@@ -31,6 +31,7 @@ export default function App() {
             <Route path="identity"         element={<Identity />} />
             <Route path="texts"            element={<Texts />} />
             <Route path="stats"            element={<Stats />} />
+            <Route path="theme"            element={<Theme />} />
             <Route path="users"            element={<Users />} />
             <Route path="ranks"            element={<Ranks />} />
             <Route path="events"           element={<Events />} />
