@@ -3,25 +3,29 @@
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
 :root {
-  --gold:        #c8a84b;
-  --gold-bright: #f0d080;
-  --gold-dim:    #7a6030;
-  --gold-dark:   #4a3820;
-  --gold-deeper: #3a2c18;
-  --bg:          #0d0a04;
-  --bg-mid:      #1a1208;
-  --bg-card:     #120e06;
-  --bg-hover:    rgba(200,168,75,.05);
-  --border:      #3a2c18;
-  --success:     #4a9a5a;
-  --danger:      #c0392b;
-  --warning:     #c08030;
+  --gold:           #c8a84b;
+  --gold-bright:    #f0d080;
+  --gold-dim:       #a07840;
+  --gold-dark:      #4a3820;
+  --gold-deeper:    #3a2c18;
+  --bg:             #0d0a04;
+  --bg-mid:         #1a1208;
+  --bg-card:        #120e06;
+  --bg-hover:       rgba(200,168,75,.05);
+  --border:         #4a3820;
+  --text-primary:   #e8d090;
+  --text-secondary: #a07840;
+  --text-muted:     #5a4828;
+  --input-bg:       #1a1208;
+  --success:        #4a9a5a;
+  --danger:         #c0392b;
+  --warning:        #c08030;
 }
 
 html, body, #root {
   height: 100%;
   background: var(--bg);
-  color: var(--gold-bright);
+  color: var(--text-primary);
   font-family: 'Crimson Text', Georgia, serif;
   font-size: 16px;
   line-height: 1.6;
@@ -32,9 +36,9 @@ html, body, #root {
 ::-webkit-scrollbar-thumb { background: var(--gold-dark); border-radius: 3px; }
 
 input, textarea, select {
-  background: var(--bg-mid);
+  background: var(--input-bg);
   border: 1px solid var(--gold-dark);
-  color: var(--gold-bright);
+  color: var(--text-primary);
   padding: 9px 12px;
   font-family: 'Crimson Text', serif;
   font-size: 14px;
@@ -44,8 +48,8 @@ input, textarea, select {
   width: 100%;
 }
 input:focus, textarea:focus, select:focus { border-color: var(--gold); }
-input::placeholder, textarea::placeholder { color: var(--gold-deeper); }
-select option { background: var(--bg-mid); color: var(--gold-bright); }
+input::placeholder, textarea::placeholder { color: var(--text-muted); }
+select option { background: var(--bg-mid); color: var(--text-primary); }
 textarea { resize: vertical; }
 
 .btn-primary {
@@ -63,16 +67,13 @@ textarea { resize: vertical; }
   transition: all .2s;
   white-space: nowrap;
 }
-.btn-primary:hover {
-  opacity: .88;
-  border-color: var(--gold-bright);
-}
-.btn-primary:disabled { opacity: .5; cursor: not-allowed; }
+.btn-primary:hover { opacity: .85; border-color: var(--gold-bright); }
+.btn-primary:disabled { opacity: .45; cursor: not-allowed; }
 
 .btn-ghost {
   background: none;
   border: 1px solid var(--gold-dark);
-  color: var(--gold-dim);
+  color: var(--text-secondary);
   padding: 8px 20px;
   font-family: 'Cinzel', serif;
   font-size: 10px;
@@ -83,19 +84,19 @@ textarea { resize: vertical; }
   transition: all .2s;
   white-space: nowrap;
 }
-.btn-ghost:hover { border-color: var(--gold); color: var(--gold); }
+.btn-ghost:hover { border-color: var(--gold); color: var(--gold-bright); }
 
 .btn-icon {
   background: none;
   border: none;
-  color: var(--gold-dim);
+  color: var(--text-secondary);
   cursor: pointer;
   padding: 3px 7px;
   border-radius: 2px;
   font-size: 13px;
   transition: all .15s;
 }
-.btn-icon:hover { color: var(--gold); background: var(--bg-hover); }
+.btn-icon:hover { color: var(--gold-bright); background: var(--bg-hover); }
 .btn-icon.danger:hover { color: var(--danger); background: rgba(192,57,43,.1); }
 
 .section-title {
@@ -110,7 +111,7 @@ textarea { resize: vertical; }
 .field-label {
   font-size: 11px;
   letter-spacing: 2px;
-  color: var(--gold-dim);
+  color: var(--text-secondary);
   text-transform: uppercase;
   display: block;
   margin-bottom: .4rem;
@@ -129,11 +130,7 @@ textarea { resize: vertical; }
   flex-shrink: 0;
 }
 
-.save-flash {
-  font-size: 12px; color: var(--success);
-  margin-left: 12px; font-style: italic;
-  opacity: 0; transition: opacity .3s;
-}
+.save-flash { font-size: 12px; color: var(--success); margin-left: 12px; font-style: italic; opacity: 0; transition: opacity .3s; }
 .save-flash.on { opacity: 1; }
 .error-text { font-size: 13px; color: var(--danger); font-style: italic; margin-top: .5rem; }
 .warn-text  { font-size: 13px; color: var(--warning); font-style: italic; margin-top: .5rem; }
