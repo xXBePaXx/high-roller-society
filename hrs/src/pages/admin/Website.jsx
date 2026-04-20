@@ -1,8 +1,5 @@
 import { useState, useRef } from 'react'
 import { useAuth } from '../../contexts/AuthContext'
-import { getStorage, ref, uploadBytes, getDownloadURL } from 'firebase/storage'
-import { db } from '../../firebase'
-import { doc, setDoc } from 'firebase/firestore'
 
 // ─── Konstanten ───────────────────────────────────────────────────────────────
 const EMOJIS = ['🎰','⚔️','🛡️','🐉','💀','🔥','👑','💎','🎲','🗡️','🏹','🧙','⚡','🌙','✨','🏹','🔮','🌟','🎯','🗺️']
@@ -101,15 +98,18 @@ export default function Website() {
   async function handleIconUpload(e) {
     const file = e.target.files?.[0]
     if (!file) return
-    if (!file.type.startsWith('image/')) { setUploadErr('Nur Bilder erlaubt.'); return }
-    if (file.size > 512 * 1024) { setUploadErr('Max. 512 KB.'); return }
+    if (!file.type.startsWith('image/')) { setUploadErr('Nur Bilder erlaubt (PNG/JPG/SVG/WebP).'); return }
+    if (file.size > 512 * 1024) { setUploadErr('Max. 512 KB — bitte Bild verkleinern.'); return }
     setUploading(true); setUploadErr('')
     try {
-      const storage = getStorage()
-      const storageRef = ref(storage, `guild/logo_${Date.now()}`)
-      await uploadBytes(storageRef, file)
-      const url = await getDownloadURL(storageRef)
-      setIdentity(prev => ({ ...prev, logoUrl: url, emoji: '' }))
+      // Base64-Encoding direkt im Browser — kein Storage nötig
+      const base64 = await new Promise((resolve, reject) => {
+        const reader = new FileReader()
+        reader.onload  = () => resolve(reader.result)
+        reader.onerror = () => reject(new Error('Lesen fehlgeschlagen'))
+        reader.readAsDataURL(file)
+      })
+      setIdentity(prev => ({ ...prev, logoUrl: base64, emoji: '' }))
       setUploadErr('')
     } catch (err) {
       setUploadErr('Upload fehlgeschlagen: ' + err.message)
