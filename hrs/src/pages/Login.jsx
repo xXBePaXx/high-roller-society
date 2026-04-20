@@ -37,6 +37,7 @@ export default function Login() {
       setError(res.error)
       if (res.locked) setCountdown(getLockoutRemaining())
     }
+    // needsCharSelect: AuthContext setzt pendingAccount, App.jsx zeigt CharacterSelect
   }
 
   const locked = countdown > 0
