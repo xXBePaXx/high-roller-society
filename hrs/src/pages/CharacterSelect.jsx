@@ -38,7 +38,7 @@ export default function CharacterSelect() {
             {pendingAccount.username}
           </h1>
           <div style={{ fontSize:12, color:t.textSecondary, marginTop:'0.4rem' }}>
-            {pendingAccount.rank} · Wähle deinen Charakter
+            Wähle deinen Charakter
           </div>
         </div>
 
@@ -70,8 +70,9 @@ export default function CharacterSelect() {
                   <div style={{ fontSize:12, color:t.textSecondary, marginTop:3 }}>
                     {char.cls}{char.race ? ` · ${char.race}` : ''}{char.level ? ` · Level ${char.level}` : ''}
                   </div>
-                  <div style={{ fontSize:10, color:t.textMuted, marginTop:2, fontFamily:'Cinzel,serif', letterSpacing:1, textTransform:'uppercase' }}>
+                  <div style={{ fontSize:10, color:t.textMuted, marginTop:2 }}>
                     {char.characterType === 'main' ? '⭐ Main' : '🔄 Twink'}
+                    {char.rank && <span style={{ marginLeft:8, color:t.accentDim, fontFamily:'Cinzel,serif', letterSpacing:1 }}>· {char.rank}</span>}
                   </div>
                 </div>
 
