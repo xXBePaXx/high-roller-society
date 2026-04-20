@@ -5,7 +5,6 @@ import {
   onSnapshot, addDoc, updateDoc, deleteDoc,
   doc, serverTimestamp,
 } from 'firebase/firestore'
-import { logAudit } from '../utils/auditLog'
 
 export function useAnnouncements() {
   const [announcements, setAnnouncements] = useState([])
@@ -25,27 +24,22 @@ export function useAnnouncements() {
   }, [])
 
   async function addAnnouncement({ title, text, pinned = false, author, authorRank, type = 'info' }) {
-    const ref = await addDoc(collection(db, 'announcements'), {
+    await addDoc(collection(db, 'announcements'), {
       title, text, pinned, author, authorRank, type,
       createdAt: serverTimestamp(),
     })
-    await logAudit('announcement_create', author, { title, pinned })
-    return ref.id
   }
 
-  async function updateAnnouncement(id, data, author) {
+  async function updateAnnouncement(id, data) {
     await updateDoc(doc(db, 'announcements', id), data)
-    await logAudit('announcement_update', author, { id, ...data })
   }
 
-  async function deleteAnnouncement(id, author) {
+  async function deleteAnnouncement(id) {
     await deleteDoc(doc(db, 'announcements', id))
-    await logAudit('announcement_delete', author, { id })
   }
 
-  async function togglePin(id, pinned, author) {
+  async function togglePin(id, pinned) {
     await updateDoc(doc(db, 'announcements', id), { pinned: !pinned })
-    await logAudit('announcement_pin', author, { id, pinned: !pinned })
   }
 
   const pinned  = announcements.filter(a => a.pinned)
