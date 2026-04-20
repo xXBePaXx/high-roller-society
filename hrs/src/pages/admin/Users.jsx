@@ -17,13 +17,14 @@ function Lbl({ children, t }) {
 }
 
 // ─── Einzelner Charakter-Editor ───────────────────────────────────────────────
-function CharEditor({ char, charIdx, total, t, onSave, onDelete }) {
+function CharEditor({ char, charIdx, total, t, onSave, onDelete, ranks }) {
   const [open,     setOpen]     = useState(false)
   const [busy,     setBusy]     = useState(false)
   const [saved,    setSaved]    = useState(false)
   const [activeTab, setActiveTab] = useState('info')
 
   // Lokaler State für diesen Charakter
+  const [charRank, setCharRank] = useState(char.rank || '')
   const [cls,      setCls]      = useState(char.cls || 'Warrior')
   const [race,     setRace]     = useState(char.race || '')
   const [level,    setLevel]    = useState(char.level || 70)
@@ -52,6 +53,7 @@ function CharEditor({ char, charIdx, total, t, onSave, onDelete }) {
     await onSave(charIdx, {
       cls, race, level: Number(level), characterType: charType,
       professions: profs,
+      rank: charRank || undefined,
       absence: absFrom ? { from: absFrom, until: absUntil, reason: absReason } : null,
     })
     setBusy(false)
@@ -124,6 +126,12 @@ function CharEditor({ char, charIdx, total, t, onSave, onDelete }) {
                   </div>
                   <div><Lbl t={t}>Level</Lbl>
                     <input type="number" min={1} max={70} value={level} onChange={e => setLevel(Math.min(70, Math.max(1, Number(e.target.value))))} style={{ fontSize: 12, width: '100%', boxSizing: 'border-box' }} />
+                  </div>
+                  <div><Lbl t={t}>Rang (optional, überschreibt Account-Rang)</Lbl>
+                    <select value={charRank} onChange={e => setCharRank(e.target.value)} style={{ fontSize:12, width:'100%' }}>
+                      <option value="">— Account-Rang verwenden —</option>
+                      {ranks.map(r => <option key={r.id} value={r.label}>{r.label}</option>)}
+                    </select>
                   </div>
                   <div><Lbl t={t}>Charakter-Typ</Lbl>
                     <div style={{ display: 'flex', gap: 6 }}>
@@ -331,7 +339,7 @@ function UserDetailPanel({ user, ranks, onClose, t }) {
             <div style={{ display:'flex', flexDirection:'column', gap:6 }}>
               {characters.map((char, idx) => (
                 <CharEditor key={idx} char={char} charIdx={idx} total={characters.length} t={t}
-                  onSave={handleCharSave} onDelete={handleCharDelete} />
+                  onSave={handleCharSave} onDelete={handleCharDelete} ranks={ranks} />
               ))}
 
               {/* Neuen Charakter hinzufügen */}
