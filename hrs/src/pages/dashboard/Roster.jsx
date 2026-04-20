@@ -45,16 +45,17 @@ function ProfBadge({ prof }) {
 }
 
 export default function Roster() {
-  const { users, loading } = useUsers()
+  const { users, loading, getAllCharacters } = useUsers()
   const t = useTheme()
   const [search, setSearch] = useState('')
   const [filterClass, setFilterClass] = useState('')
   const [filterType, setFilterType] = useState('') // '' | 'main' | 'twink'
 
-  const active = users.filter(u => u.active)
+  const allChars = getAllCharacters()
+  const active = allChars
 
   const filtered = active.filter(u => {
-    const matchSearch = !search || [u.name, u.rank, u.cls].some(v =>
+    const matchSearch = !search || [u.name, u.username, u.rank, u.cls].some(v =>
       v?.toLowerCase().includes(search.toLowerCase())
     )
     const matchClass = !filterClass || u.cls === filterClass
@@ -70,10 +71,10 @@ export default function Roster() {
     return a.name.localeCompare(b.name)
   })
 
-  const mainCount  = active.filter(u => (u.characterType || 'main') === 'main').length
-  const twinkCount = active.filter(u => u.characterType === 'twink').length
+  const mainCount  = active.filter(c => (c.characterType || 'main') === 'main').length
+  const twinkCount = active.filter(c => c.characterType === 'twink').length
 
-  const classes = [...new Set(active.map(u => u.cls).filter(Boolean))].sort()
+  const classes = [...new Set(active.map(c => c.cls).filter(Boolean))].sort()
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
