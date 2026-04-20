@@ -1,5 +1,6 @@
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
+import { useTheme } from '../hooks/useTheme'
 
 const FONT_MAP = {
   cinzel:        "'Cinzel', serif",
