@@ -1,6 +1,7 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import { AuthProvider } from './contexts/AuthContext'
 import Landing          from './pages/Landing'
+import CharacterSelect  from './pages/CharacterSelect'
 import Login            from './pages/Login'
 import AdminLayout      from './pages/AdminLayout'
 import DashboardLayout  from './pages/dashboard/DashboardLayout'
@@ -21,10 +22,19 @@ import AuditLog         from './pages/admin/AuditLog'
 import ThemeInjector from './components/ThemeInjector'
 import './styles/global.css'
 
+import { useAuth } from './contexts/AuthContext'
+
+function CharSelectGate({ children }) {
+  const { pendingAccount } = useAuth()
+  if (pendingAccount) return <CharacterSelect />
+  return children
+}
+
 export default function App() {
   return (
     <AuthProvider>
       <ThemeInjector />
+      <CharSelectGate>
       <BrowserRouter>
         <Routes>
           <Route path="/"      element={<Landing />} />
@@ -57,6 +67,7 @@ export default function App() {
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </BrowserRouter>
+      </CharSelectGate>
     </AuthProvider>
   )
 }
