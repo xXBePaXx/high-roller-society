@@ -142,7 +142,10 @@ export default function Landing() {
           marginBottom: '1.2rem', position: 'relative', background: t.gradLogo,
         }}>
           <div style={{ position: 'absolute', inset: 5, border: `1px solid ${t.accent}40`, borderRadius: '50%' }} />
-          <span style={{ fontSize: 38, lineHeight: 1 }}>{s.emoji}</span>
+          {s.logoUrl
+            ? <img src={s.logoUrl} alt="Guild Logo" style={{ width: 64, height: 64, borderRadius: '50%', objectFit: 'cover' }} />
+            : <span style={{ fontSize: 38, lineHeight: 1 }}>{s.emoji}</span>
+          }
         </div>
 
         <div style={{ fontSize: 11, letterSpacing: 4, color: t.accentDim, textTransform: 'uppercase', marginBottom: '.3rem' }}>{s.realm}</div>
