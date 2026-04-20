@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react'
 import { db } from '../firebase'
 import { doc, onSnapshot, setDoc } from 'firebase/firestore'
-import { logAudit } from '../utils/auditLog'
 
 const DEFAULT_INFO = {
   rules: `# Gildenregeln
@@ -43,9 +42,8 @@ export function useGuildInfo() {
     return unsub
   }, [])
 
-  async function saveGuildInfo(data, author) {
+  async function saveGuildInfo(data) {
     await setDoc(doc(db, 'config', 'guildInfo'), data, { merge: true })
-    await logAudit('guild_info_update', author, {})
   }
 
   return { info: info || DEFAULT_INFO, loading, saveGuildInfo }
