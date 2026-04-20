@@ -16,11 +16,13 @@ import Users            from './pages/admin/Users'
 import Ranks            from './pages/admin/Ranks'
 import DKPAdmin         from './pages/admin/DKP'
 import AuditLog         from './pages/admin/AuditLog'
+import ThemeInjector from './components/ThemeInjector'
 import './styles/global.css'
 
 export default function App() {
   return (
     <AuthProvider>
+      <ThemeInjector />
       <BrowserRouter>
         <Routes>
           <Route path="/"      element={<Landing />} />
