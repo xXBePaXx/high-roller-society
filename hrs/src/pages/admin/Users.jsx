@@ -517,20 +517,28 @@ function UserDetailPanel({ user, ranks, onClose, t }) {
 
           {tab==='account' && (
             <div style={{ display:'flex', flexDirection:'column', gap:12 }}>
-              <div style={{ background:t.bgMid, border:`1px solid ${t.accentFade}`, borderRadius:3, padding:'0.8rem' }}>
-                <div style={{ fontFamily:'Cinzel,serif', fontSize:9, color:t.textMuted, letterSpacing:2, textTransform:'uppercase', marginBottom:6 }}>Login-Benutzername</div>
-                <div style={{ color:t.accentSoft, fontFamily:'Cinzel,serif', fontSize:14 }}>{user.username||user.name}</div>
-                <div style={{ fontSize:10, color:t.textMuted, marginTop:4, fontStyle:'italic' }}>Benutzername kann nur manuell in Firestore geändert werden.</div>
+              <div style={{ background:t.bgMid, border:`1px solid ${t.accentFade}`, borderRadius:3, padding:'1rem' }}>
+                <div style={{ fontFamily:'Cinzel,serif', fontSize:9, color:t.textMuted, letterSpacing:2, textTransform:'uppercase', marginBottom:8 }}>Login-Benutzername</div>
+                <div style={{ color:t.accentSoft, fontFamily:'Cinzel,serif', fontSize:16 }}>{user.username||user.name}</div>
+                <div style={{ fontSize:10, color:t.textMuted, marginTop:6, fontStyle:'italic' }}>
+                  Der Benutzername wird zum Einloggen verwendet und kann nur direkt in Firestore geändert werden.
+                </div>
               </div>
-              <div><Lbl t={t}>Account-Rang (Fallback wenn kein Charakter-Rang gesetzt)</Lbl>
-                <select value={rank} onChange={e=>setRank(e.target.value)} style={{ fontSize:12, width:'100%' }}>
-                  {ranks.map(r=><option key={r.id} value={r.label}>{r.label}</option>)}
-                </select>
+              <div style={{ background:t.bgMid, border:`1px solid ${t.accentFade}`, borderRadius:3, padding:'1rem' }}>
+                <div style={{ fontFamily:'Cinzel,serif', fontSize:9, color:t.textMuted, letterSpacing:2, textTransform:'uppercase', marginBottom:8 }}>Rang-System</div>
+                <div style={{ fontSize:12, color:t.textSecondary, lineHeight:1.7 }}>
+                  Der Rang wird <strong style={{ color:t.accentSoft }}>pro Charakter</strong> vergeben — im Tab "Charaktere" für jeden Char individuell einstellbar.
+                  <br/>Rechte (Kalender, DKP, Events) werden automatisch aus dem Charakter-Rang geladen beim Login.
+                </div>
               </div>
-              {err && <div style={{ fontSize:11, color:'#e08080', fontStyle:'italic' }}>✕ {err}</div>}
-              {saved && <span style={{ fontSize:11, color:'#4a9a5a', fontStyle:'italic' }}>✓ Gespeichert</span>}
-              <div style={{ display:'flex', justifyContent:'flex-end' }}>
-                <button className="btn-primary" style={{ fontSize:11 }} onClick={saveRank} disabled={busy}>{busy?'Speichern...':'Rang speichern'}</button>
+              <div style={{ background:t.bgMid, border:`1px solid ${t.accentFade}`, borderRadius:3, padding:'1rem' }}>
+                <div style={{ fontFamily:'Cinzel,serif', fontSize:9, color:t.textMuted, letterSpacing:2, textTransform:'uppercase', marginBottom:8 }}>Account-Infos</div>
+                <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:8, fontSize:12, color:t.textSecondary }}>
+                  <div>Erstellt: <span style={{ color:t.accentDim }}>{user.createdAt?.toDate?user.createdAt.toDate().toLocaleDateString('de-DE'):'—'}</span></div>
+                  <div>Status: <span style={{ color:user.active?'#4a9a5a':'#c04040' }}>{user.active?'Aktiv':'Inaktiv'}</span></div>
+                  <div>Charaktere: <span style={{ color:t.accent, fontFamily:'Cinzel,serif' }}>{(user.characters||[]).length}</span></div>
+                  <div>Login: <span style={{ color:t.accentDim }}>{user.username||user.name}</span></div>
+                </div>
               </div>
             </div>
           )}
