@@ -101,7 +101,7 @@ export default function Roster() {
           ].map(s => (
             <div key={s.label}>
               <span style={{ fontFamily: 'Cinzel,serif', fontSize: 16, color: t.accent }}>{s.value}</span>
-              <span style={{ fontSize: 11, color: t.accentGhost, marginLeft: 6 }}>{s.label}</span>
+              <span style={{ fontSize: 11, color: t.accentDim, marginLeft: 6 }}>{s.label}</span>
             </div>
           ))}
         </div>
@@ -191,20 +191,19 @@ export default function Roster() {
                         fontFamily: 'Cinzel,serif', fontSize: 14,
                         fontWeight: 600, color: clsColor,
                       }}>{u.name}</span>
-                      <span style={{
-                        fontSize: 10, color: t.accentGhost,
-                        fontFamily: 'Cinzel,serif', letterSpacing: 1,
-                      }}>{u.rank}</span>
+
                       <span style={{
                         fontSize: 9, letterSpacing: 1,
                         fontFamily: 'Cinzel,serif',
-                        color: charType === 'main' ? t.accent : t.accentGhost,
+                        color: charType === 'main' ? t.accent : t.accentDim,
+                        background: charType === 'main' ? `${t.accent}15` : 'transparent',
+                        padding: '1px 5px', borderRadius: 2,
                       }}>
                         {charType === 'main' ? '⭐ MAIN' : '🔄 TWINK'}
                       </span>
                     </div>
-                    <div style={{ fontSize: 11, color: t.accentGhost, marginTop: 2 }}>
-                      {u.cls}{u.race && ` · ${u.race}`}{u.level && ` · Level ${u.level}`}
+                    <div style={{ fontSize: 11, color: t.accentDim, marginTop: 2 }}>
+                      {u.cls || '—'}{u.race ? ` · ${u.race}` : ''}{u.level ? ` · Level ${u.level}` : ''}
                     </div>
                     {u.absence && (
                       <div style={{ fontSize: 10, color: "#e08080", marginTop: 3, fontStyle: "italic" }}>🏖️ Abwesend {u.absence.from}{u.absence.until ? ` – ${u.absence.until}` : ""}</div>
@@ -218,9 +217,12 @@ export default function Roster() {
 
                   {/* Rechts: Kontakt-Hinweis */}
                   <div style={{ textAlign: 'right', flexShrink: 0 }}>
-                    <div style={{ fontSize: 10, color: t.accentGhost, fontStyle: 'italic' }}>
+                    <div style={{ fontSize: 10, color: t.accentDim, fontStyle: 'italic' }}>
                       /w {u.name}
                     </div>
+                    {u.username && u.username !== u.name && (
+                      <div style={{ fontSize: 9, color: t.textMuted, marginTop:2 }}>{u.username}</div>
+                    )}
                   </div>
                 </div>
               )
