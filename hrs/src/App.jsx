@@ -8,19 +8,22 @@ import DashboardLayout  from './pages/dashboard/DashboardLayout'
 import Dashboard        from './pages/dashboard/Dashboard'
 import CharacterView    from './pages/dashboard/CharacterView'
 import GuildInfo        from './pages/dashboard/GuildInfo'
-import GuildAdmin       from './pages/admin/GuildAdmin'
 import Roster           from './pages/dashboard/Roster'
 import Calendar         from './pages/dashboard/Calendar'
 import DKP              from './pages/dashboard/DKP'
 import Verwaltung       from './pages/dashboard/Verwaltung'
-import Website     from './pages/admin/Website'
-import { Credentials } from './pages/admin/Settings'
+import GuildShop        from './pages/dashboard/GuildShop'
+import Website          from './pages/admin/Website'
+import { Credentials }  from './pages/admin/Settings'
 import Events           from './pages/admin/Events'
 import Users            from './pages/admin/Users'
 import Ranks            from './pages/admin/Ranks'
 import DKPAdmin         from './pages/admin/DKP'
 import AuditLog         from './pages/admin/AuditLog'
-import ThemeInjector from './components/ThemeInjector'
+import GuildAdmin       from './pages/admin/GuildAdmin'
+import Economy          from './pages/admin/Economy'
+import ShopAdmin        from './pages/admin/ShopAdmin'
+import ThemeInjector    from './components/ThemeInjector'
 import './styles/global.css'
 
 import { useAuth } from './contexts/AuthContext'
@@ -50,6 +53,8 @@ export default function App() {
             <Route path="events"           element={<Events />} />
             <Route path="dkp"              element={<DKPAdmin />} />
             <Route path="gilde"            element={<GuildAdmin />} />
+            <Route path="economy"          element={<Economy />} />
+            <Route path="shop"             element={<ShopAdmin />} />
             <Route path="auditlog"         element={<AuditLog />} />
             <Route path="credentials"      element={<Credentials />} />
           </Route>
@@ -62,6 +67,7 @@ export default function App() {
             <Route path="roster"      element={<Roster />} />
             <Route path="calendar"    element={<Calendar />} />
             <Route path="dkp"         element={<DKP />} />
+            <Route path="shop"        element={<GuildShop />} />
             <Route path="verwaltung"  element={<Verwaltung />} />
           </Route>
 
