@@ -9,6 +9,7 @@ const NAV = [
     { path: 'ranks',  label: 'Ränge' },
     { path: 'events', label: 'Events' },
     { path: 'dkp',    label: 'DKP' },
+    { path: 'gilde', label: 'Gilde' },
   ]},
   { group: 'System', items: [
     { path: 'auditlog',    label: 'Audit-Log' },
