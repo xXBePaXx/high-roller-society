@@ -10,9 +10,6 @@ function Lbl({ children, t }) {
 function Card({ children, t, style={} }) {
   return <div style={{ background:t.cardBg, border:`1px solid ${t.accentFade}`, borderRadius:4, padding:'1.2rem 1.4rem', ...style }}>{children}</div>
 }
-function STitle({ children, t }) {
-  return <div style={{ fontFamily:'Cinzel,serif', fontSize:9, letterSpacing:3, color:t.accentDim, textTransform:'uppercase', marginBottom:'1rem', paddingBottom:'0.5rem', borderBottom:`1px solid ${t.accentFade}` }}>{children}</div>
-}
 
 const EMPTY_FORM = { name:'', description:'', gold:0, silver:0, copper:0, category:'special', icon:'📦', stock:-1, active:true, deliveryType:'ingame' }
 
@@ -38,7 +35,6 @@ function ItemForm({ t, config, initial, onSave, onCancel, busy }) {
         <textarea value={form.description} onChange={e=>upd('description',e.target.value)} placeholder="Was bekommt der Käufer?" style={{ fontSize:12, width:'100%', boxSizing:'border-box', minHeight:60 }} />
       </div>
 
-      {/* Lieferart */}
       <div>
         <Lbl t={t}>Lieferart</Lbl>
         <div style={{ display:'grid', gridTemplateColumns:'repeat(2,1fr)', gap:6 }}>
@@ -92,10 +88,10 @@ function ItemForm({ t, config, initial, onSave, onCancel, busy }) {
 }
 
 // ── Bestellkarte (Admin) ──────────────────────────────────────────────────────
-function AdminOrderCard({ order, t, formatCoins, onDeliver, onConfirmCancel }) {
+function AdminOrderCard({ order, t, formatCoins, onDeliver, onResetToOpen, onConfirmCancel }) {
   const [adminNote, setAdminNote] = useState(order.adminNote || '')
   const [busy, setBusy]           = useState(false)
-  const [open, setOpen]           = useState(false)
+  const [open, setOpen]           = useState(order.status === 'pending' || order.status === 'cancel_requested')
   const status   = ORDER_STATUS[order.status] || ORDER_STATUS.pending
   const delivery = DELIVERY_TYPES.find(d => d.id === order.deliveryType)
   const isUrgent = order.status === 'cancel_requested'
@@ -107,9 +103,11 @@ function AdminOrderCard({ order, t, formatCoins, onDeliver, onConfirmCancel }) {
   }
 
   async function handleDeliver() {
-    setBusy(true)
-    await onDeliver(order.id, adminNote)
-    setBusy(false)
+    setBusy(true); await onDeliver(order.id, adminNote); setBusy(false)
+  }
+  async function handleReset() {
+    if (!window.confirm('Bestellung zurück auf "Offen" setzen?')) return
+    setBusy(true); await onResetToOpen(order.id); setBusy(false)
   }
 
   return (
@@ -141,31 +139,60 @@ function AdminOrderCard({ order, t, formatCoins, onDeliver, onConfirmCancel }) {
             </div>
           )}
 
+          {/* Offen → ausgeben */}
           {order.status === 'pending' && (
             <>
               <div>
                 <Lbl t={t}>Admin-Notiz an den User (optional)</Lbl>
                 <input value={adminNote} onChange={e=>setAdminNote(e.target.value)} placeholder="z.B. Item wurde gesendet, kommt morgen an..." style={{ fontSize:12, width:'100%', boxSizing:'border-box' }} />
               </div>
-              <button className="btn-primary" style={{ fontSize:11, background:`linear-gradient(135deg,#4a9a5a30,${t.bgDark})`, borderColor:'#4a9a5a', color:'#4a9a5a' }} onClick={handleDeliver} disabled={busy}>
+              <button style={{ fontSize:11, padding:'9px', fontFamily:'Cinzel,serif', letterSpacing:1, textTransform:'uppercase', background:`linear-gradient(135deg,#4a9a5a20,${t.bgDark})`, border:'1px solid #4a9a5a', color:'#4a9a5a', borderRadius:2, cursor:'pointer' }} onClick={handleDeliver} disabled={busy}>
                 {busy ? '...' : '✅ Als ausgegeben markieren'}
               </button>
             </>
           )}
 
+          {/* Stornierungsanfrage */}
           {order.status === 'cancel_requested' && (
-            <div style={{ display:'flex', gap:8 }}>
-              <button className="btn-ghost" style={{ flex:1, fontSize:11, color:'#c04040', borderColor:'#c04040' }} onClick={() => onConfirmCancel(order.id)} disabled={busy}>
-                ❌ Stornierung genehmigen
-              </button>
-              <button className="btn-primary" style={{ flex:1, fontSize:11 }} onClick={handleDeliver} disabled={busy}>
-                ✅ Doch ausgegeben
+            <>
+              <div>
+                <Lbl t={t}>Admin-Notiz an den User (optional)</Lbl>
+                <input value={adminNote} onChange={e=>setAdminNote(e.target.value)} placeholder="z.B. Stornierung genehmigt, Coins werden gutgeschrieben..." style={{ fontSize:12, width:'100%', boxSizing:'border-box' }} />
+              </div>
+              <div style={{ display:'flex', gap:8 }}>
+                <button className="btn-ghost" style={{ flex:1, fontSize:11, color:'#c04040', borderColor:'#c04040' }} onClick={() => onConfirmCancel(order.id)} disabled={busy}>
+                  ❌ Stornierung genehmigen
+                </button>
+                <button style={{ flex:1, fontSize:11, padding:'9px', fontFamily:'Cinzel,serif', letterSpacing:1, textTransform:'uppercase', background:`linear-gradient(135deg,#4a9a5a20,${t.bgDark})`, border:'1px solid #4a9a5a', color:'#4a9a5a', borderRadius:2, cursor:'pointer' }} onClick={handleDeliver} disabled={busy}>
+                  ✅ Doch ausgegeben
+                </button>
+              </div>
+            </>
+          )}
+
+          {/* Ausgegeben → Infos + Reset-Button */}
+          {order.status === 'delivered' && (
+            <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', flexWrap:'wrap', gap:8 }}>
+              <div>
+                {order.deliveredAt && <div style={{ fontSize:11, color:'#4a9a5a', fontStyle:'italic' }}>Ausgegeben: {formatDate(order.deliveredAt)}</div>}
+                {order.adminNote && <div style={{ fontSize:11, color:t.textSecondary, fontStyle:'italic', marginTop:3 }}>Notiz: {order.adminNote}</div>}
+              </div>
+              <button className="btn-ghost" style={{ fontSize:9, color:'#c8a84b', borderColor:'#c8a84b' }} onClick={handleReset} disabled={busy}>
+                🔄 Zurück auf Offen
               </button>
             </div>
           )}
 
-          {order.status === 'delivered' && order.deliveredAt && (
-            <div style={{ fontSize:11, color:'#4a9a5a', fontStyle:'italic' }}>Ausgegeben: {formatDate(order.deliveredAt)}</div>
+          {/* Storniert */}
+          {order.status === 'cancelled' && (
+            <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between' }}>
+              <div style={{ fontSize:11, color:'#c04040', fontStyle:'italic' }}>
+                Storniert: {formatDate(order.cancelledAt)}
+              </div>
+              <button className="btn-ghost" style={{ fontSize:9, color:'#c8a84b', borderColor:'#c8a84b' }} onClick={handleReset} disabled={busy}>
+                🔄 Zurück auf Offen
+              </button>
+            </div>
           )}
         </div>
       )}
@@ -178,19 +205,19 @@ export default function ShopAdmin() {
   const t = useTheme()
   const { items, loading: shopLoading, addItem, updateItem, deleteItem, toggleActive } = useShop()
   const { config, formatCoins } = useEconomy()
-  const { orders, loading: ordersLoading, pendingCount, markDelivered, confirmCancel } = useOrders()
+  const { orders, loading: ordersLoading, pendingCount, markDelivered, resetToOpen, confirmCancel } = useOrders()
 
-  const [view,    setView]    = useState('orders') // 'orders' | 'items'
-  const [adding,  setAdding]  = useState(false)
-  const [editing, setEditing] = useState(null)
-  const [busy,    setBusy]    = useState(false)
-  const [filter,  setFilter]  = useState('ALL')
+  const [view,        setView]        = useState('orders')
+  const [adding,      setAdding]      = useState(false)
+  const [editing,     setEditing]     = useState(null)
+  const [busy,        setBusy]        = useState(false)
+  const [filter,      setFilter]      = useState('ALL')
   const [orderFilter, setOrderFilter] = useState('pending')
 
-  async function handleAdd(form) { setBusy(true); await addItem(form); setBusy(false); setAdding(false) }
+  async function handleAdd(form)  { setBusy(true); await addItem(form);               setBusy(false); setAdding(false) }
   async function handleEdit(form) { setBusy(true); await updateItem(editing.id, form); setBusy(false); setEditing(null) }
 
-  const filteredItems = filter === 'ALL' ? items : items.filter(i => i.category === filter)
+  const filteredItems  = filter === 'ALL' ? items : items.filter(i => i.category === filter)
   const filteredOrders = orderFilter === 'ALL'
     ? orders
     : orderFilter === 'pending'
@@ -200,9 +227,10 @@ export default function ShopAdmin() {
   const tabStyle = (id) => ({
     fontFamily:'Cinzel,serif', fontSize:10, letterSpacing:2, textTransform:'uppercase',
     padding:'8px 16px', cursor:'pointer', transition:'all .15s', border:'none',
-    background: view===id?`${t.accent}18`:'transparent',
-    borderBottom: view===id?`2px solid ${t.accent}`:'2px solid transparent',
-    color: view===id?t.accentSoft:t.accentDim, position:'relative',
+    background:   view===id ? `${t.accent}18`          : 'transparent',
+    borderBottom: view===id ? `2px solid ${t.accent}` : '2px solid transparent',
+    color:        view===id ? t.accentSoft              : t.accentDim,
+    position:'relative',
   })
 
   return (
@@ -211,7 +239,7 @@ export default function ShopAdmin() {
 
       {/* Tabs */}
       <div style={{ display:'flex', borderBottom:`1px solid ${t.accentFade}` }}>
-        <button onClick={() => setView('orders')} style={{ ...tabStyle('orders') }}>
+        <button onClick={() => setView('orders')} style={tabStyle('orders')}>
           📦 Bestellungen
           {pendingCount > 0 && <span style={{ marginLeft:6, background:t.accent, color:t.bgDark, fontSize:9, fontWeight:700, borderRadius:10, padding:'1px 6px' }}>{pendingCount}</span>}
         </button>
@@ -223,11 +251,11 @@ export default function ShopAdmin() {
         <>
           <div style={{ display:'flex', gap:6, flexWrap:'wrap' }}>
             {[
-              ['pending', '🟡 Offen'],
+              ['pending',          '🟡 Offen'],
               ['cancel_requested', '🔄 Stornierungen'],
-              ['delivered', '✅ Ausgegeben'],
-              ['cancelled', '❌ Storniert'],
-              ['ALL', '📋 Alle'],
+              ['delivered',        '✅ Ausgegeben'],
+              ['cancelled',        '❌ Storniert'],
+              ['ALL',              '📋 Alle'],
             ].map(([id, label]) => (
               <button key={id} onClick={() => setOrderFilter(id)} style={{ background:orderFilter===id?`${t.accent}18`:'transparent', border:orderFilter===id?`1px solid ${t.accent}`:`1px solid ${t.accentFade}`, color:orderFilter===id?t.accentSoft:t.accentDim, borderRadius:2, fontFamily:'Cinzel,serif', fontSize:9, letterSpacing:1, padding:'4px 10px', cursor:'pointer' }}>{label}</button>
             ))}
@@ -241,7 +269,7 @@ export default function ShopAdmin() {
             <div style={{ display:'flex', flexDirection:'column', gap:6 }}>
               {filteredOrders.map(order => (
                 <AdminOrderCard key={order.id} order={order} t={t} formatCoins={formatCoins}
-                  onDeliver={markDelivered} onConfirmCancel={confirmCancel} />
+                  onDeliver={markDelivered} onResetToOpen={resetToOpen} onConfirmCancel={confirmCancel} />
               ))}
             </div>
           )}
