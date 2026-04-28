@@ -3,13 +3,19 @@ import { useAuth } from '../contexts/AuthContext'
 import { useTheme } from '../hooks/useTheme'
 
 const NAV = [
-  { group: 'Webseite', items: [{ path: 'website', label: 'Webseite' }]},
+  { group: 'Webseite', items: [
+    { path: 'website', label: 'Webseite' },
+  ]},
   { group: 'Gilde', items: [
-    { path: 'users',  label: 'Benutzer' },
-    { path: 'ranks',  label: 'Ränge' },
-    { path: 'events', label: 'Events' },
-    { path: 'dkp',    label: 'DKP' },
-    { path: 'gilde', label: 'Gilde' },
+    { path: 'users',   label: 'Benutzer' },
+    { path: 'ranks',   label: 'Ränge' },
+    { path: 'gilde',   label: 'Gilden-Info' },
+    { path: 'events',  label: 'Events' },
+    { path: 'dkp',     label: 'DKP' },
+  ]},
+  { group: 'Wirtschaft', items: [
+    { path: 'economy', label: 'Währung' },
+    { path: 'shop',    label: 'Shop' },
   ]},
   { group: 'System', items: [
     { path: 'auditlog',    label: 'Audit-Log' },
