@@ -27,13 +27,14 @@ export default function DashboardLayout() {
   const hasVerwaltung = perms.canManageEvents || perms.canManageDKP
 
   const navLinks = [
-    { to: '/dashboard',              label: 'Dashboard',      end: true,  show: true },
-    { to: '/dashboard/charakter',    label: 'Charakter',      end: false, show: true },
-    { to: '/dashboard/info',         label: 'Gilden-Info',    end: false, show: true },
-    { to: '/dashboard/roster',       label: 'Roster',         end: false, show: currentUser.role === 'admin' || perms.canViewRoster },
-    { to: '/dashboard/calendar',     label: 'Kalender',       end: false, show: currentUser.role === 'admin' || perms.canViewCalendar },
-    { to: '/dashboard/dkp',          label: 'DKP',            end: false, show: currentUser.role === 'admin' || perms.canViewDKP },
-    { to: '/dashboard/verwaltung',   label: 'Verwaltung',     end: false, show: hasVerwaltung },
+    { to: '/dashboard',            label: 'Dashboard',   end: true,  show: true },
+    { to: '/dashboard/charakter',  label: 'Charakter',   end: false, show: true },
+    { to: '/dashboard/info',       label: 'Gilden-Info', end: false, show: true },
+    { to: '/dashboard/roster',     label: 'Roster',      end: false, show: currentUser.role === 'admin' || perms.canViewRoster },
+    { to: '/dashboard/calendar',   label: 'Kalender',    end: false, show: currentUser.role === 'admin' || perms.canViewCalendar },
+    { to: '/dashboard/dkp',        label: 'DKP',         end: false, show: currentUser.role === 'admin' || perms.canViewDKP },
+    { to: '/dashboard/shop',       label: '🛒 Shop',     end: false, show: true },
+    { to: '/dashboard/verwaltung', label: 'Verwaltung',  end: false, show: hasVerwaltung },
   ].filter(l => l.show)
 
   async function handleLogout() {
@@ -44,41 +45,34 @@ export default function DashboardLayout() {
   return (
     <div style={{ minHeight:'100vh', background:t.bgDark, display:'flex', flexDirection:'column' }}>
 
-      {/* Top-Balken */}
       <div style={{ height:2, background:t.gradBar, flexShrink:0 }} />
 
       <header style={{
-        background: t.bgMid,
-        borderBottom: `1px solid ${t.accentFade}`,
+        background: t.bgMid, borderBottom: `1px solid ${t.accentFade}`,
         padding: '0 1.5rem', display:'flex', alignItems:'center',
         gap:'1.5rem', height:50, position:'sticky', top:0, zIndex:100,
         boxShadow: `0 2px 20px ${t.bgDark}80`,
       }}>
-        {/* Logo */}
         <div style={{ fontFamily:'Cinzel,serif', fontSize:14, color:t.accent, letterSpacing:2, whiteSpace:'nowrap', marginRight:'auto' }}>
           🎰 HRS
         </div>
 
-        {/* Nav */}
-        <nav style={{ display:'flex', gap:'0.2rem' }}>
+        <nav style={{ display:'flex', gap:'0.2rem', flexWrap:'wrap' }}>
           {navLinks.map(({ to, label, end }) => (
             <NavLink key={to} to={to} end={end} style={({ isActive }) => ({
               fontFamily:'Cinzel,serif', fontSize:10, letterSpacing:2,
               padding:'6px 12px', borderRadius:2, textDecoration:'none',
               textTransform:'uppercase', transition:'all .15s',
-              color:       isActive ? t.accentSoft : t.accentDim,
-              background:  isActive ? `${t.accent}12` : 'transparent',
-              border:      isActive ? `1px solid ${t.accent}35` : '1px solid transparent',
+              color:      isActive ? t.accentSoft : t.accentDim,
+              background: isActive ? `${t.accent}12` : 'transparent',
+              border:     isActive ? `1px solid ${t.accent}35` : '1px solid transparent',
             })}>
               {label}
             </NavLink>
           ))}
         </nav>
 
-        {/* User-Badge + Char-Switcher + Logout */}
         <div style={{ display:'flex', alignItems:'center', gap:'0.6rem', marginLeft:'auto', position:'relative' }}>
-
-          {/* Charakter-Switcher */}
           {currentUser.characters && currentUser.characters.length > 1 ? (
             <div style={{ position:'relative' }}>
               <button onClick={() => setCharMenuOpen(v => !v)} style={{
@@ -97,7 +91,6 @@ export default function DashboardLayout() {
                 </div>
                 <span style={{ color:t.accentFade, fontSize:9 }}>{charMenuOpen ? '▲' : '▼'}</span>
               </button>
-
               {charMenuOpen && (
                 <div style={{
                   position:'absolute', top:'calc(100% + 6px)', right:0, zIndex:200,
@@ -137,7 +130,6 @@ export default function DashboardLayout() {
               )}
             </div>
           ) : (
-            /* Einzelner Charakter — normaler Badge */
             <div style={{ textAlign:'right' }}>
               <div style={{ fontFamily:'Cinzel,serif', fontSize:11, color:clsColor, letterSpacing:1 }}>
                 {currentUser.activeChar?.name || currentUser.username}
@@ -166,7 +158,6 @@ export default function DashboardLayout() {
         <Outlet />
       </main>
 
-      {/* Bottom-Balken */}
       <div style={{ height:2, background:t.gradBar, flexShrink:0 }} />
     </div>
   )
