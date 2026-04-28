@@ -15,10 +15,10 @@ export const ORDER_STATUS = {
 }
 
 export const DELIVERY_TYPES = [
-  { id: 'ingame',  label: 'Ingame',     icon: '🎮', desc: 'Per Handelsfenster oder ingame Post' },
-  { id: 'postal',  label: 'Postalisch', icon: '📬', desc: 'Physisch per Post (Adresse nötig)' },
-  { id: 'service', label: 'Service',    icon: '⚡', desc: 'Wird direkt erbracht (z.B. Boost)' },
-  { id: 'both',    label: 'Beides',     icon: '🎁', desc: 'Ingame oder postalisch möglich' },
+  { id: 'ingame',  label: 'Ingame',          icon: '🎮', desc: 'Per Handelsfenster oder ingame Post' },
+  { id: 'postal',  label: 'Postalisch',      icon: '📬', desc: 'Physisch per Post (Adresse nötig)' },
+  { id: 'service', label: 'Dienstleistung',  icon: '⚡', desc: 'Wird zu einem vereinbarten Termin erbracht (z.B. Boost, Crafting)' },
+  { id: 'both',    label: 'Ingame oder Post',icon: '🎁', desc: 'Beides möglich — User wählt beim Kauf' },
 ]
 
 export function useOrders() {
