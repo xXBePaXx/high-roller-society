@@ -7,20 +7,18 @@ import {
 import { writeLog } from '../utils/auditLog'
 import { useAuth } from '../contexts/AuthContext'
 
-// Status-Definitionen
 export const ORDER_STATUS = {
-  pending:          { label: 'Offen',               icon: '🟡', color: '#c8a84b' },
+  pending:          { label: 'Offen',                icon: '🟡', color: '#c8a84b' },
   delivered:        { label: 'Ausgegeben',           icon: '✅', color: '#4a9a5a' },
   cancelled:        { label: 'Storniert',            icon: '❌', color: '#c04040' },
   cancel_requested: { label: 'Stornierung beantragt',icon: '🔄', color: '#e87830' },
 }
 
-// Lieferarten (pro Item beim Anlegen festgelegt)
 export const DELIVERY_TYPES = [
-  { id: 'ingame',   label: 'Ingame',    icon: '🎮', desc: 'Per Handelsfenster oder ingame Post' },
-  { id: 'postal',   label: 'Postalisch',icon: '📬', desc: 'Physisch per Post (Adresse nötig)' },
-  { id: 'service',  label: 'Service',   icon: '⚡', desc: 'Wird direkt erbracht (z.B. Boost)' },
-  { id: 'both',     label: 'Beides',    icon: '🎁', desc: 'Ingame oder postalisch möglich' },
+  { id: 'ingame',  label: 'Ingame',     icon: '🎮', desc: 'Per Handelsfenster oder ingame Post' },
+  { id: 'postal',  label: 'Postalisch', icon: '📬', desc: 'Physisch per Post (Adresse nötig)' },
+  { id: 'service', label: 'Service',    icon: '⚡', desc: 'Wird direkt erbracht (z.B. Boost)' },
+  { id: 'both',    label: 'Beides',     icon: '🎁', desc: 'Ingame oder postalisch möglich' },
 ]
 
 export function useOrders() {
@@ -29,8 +27,8 @@ export function useOrders() {
   const { currentUser } = useAuth()
   const by = currentUser?.username || 'system'
 
-  // Alle Bestellungen live laden (Admin sieht alle, Member nur eigene)
   useEffect(() => {
+    // Admin sieht alle, Member nur eigene — beide sofort live
     const q = currentUser?.role === 'admin'
       ? query(collection(db, 'orders'), orderBy('createdAt', 'desc'))
       : query(collection(db, 'orders'), where('userId', '==', currentUser?.id || ''), orderBy('createdAt', 'desc'))
@@ -41,7 +39,7 @@ export function useOrders() {
     }, err => { console.warn('Orders:', err.message); setLoading(false) })
   }, [currentUser?.role, currentUser?.id])
 
-  // Bestellung erstellen
+  // Bestellung erstellen — sofort in Firestore, sofort sichtbar
   const createOrder = useCallback(async ({ userId, username, itemId, itemName, itemIcon, price, deliveryType, note }) => {
     const ref = await addDoc(collection(db, 'orders'), {
       userId, username,
@@ -69,6 +67,17 @@ export function useOrders() {
       adminNote:   adminNote.trim(),
     })
     await writeLog('ORDER_DELIVERED', { orderId, adminNote }, by)
+  }, [by])
+
+  // Admin: Korrektur — zurück auf Offen setzen
+  const resetToOpen = useCallback(async (orderId) => {
+    await updateDoc(doc(db, 'orders', orderId), {
+      status:      'pending',
+      deliveredAt: null,
+      updatedAt:   serverTimestamp(),
+      adminNote:   '',
+    })
+    await writeLog('ORDER_RESET_TO_OPEN', { orderId }, by)
   }, [by])
 
   // Admin: Stornierung genehmigen
@@ -100,7 +109,6 @@ export function useOrders() {
     await writeLog('ORDER_CANCEL_REQUESTED', { orderId }, by)
   }, [by])
 
-  // User: Notiz aktualisieren
   const updateNote = useCallback(async (orderId, note) => {
     await updateDoc(doc(db, 'orders', orderId), {
       note:      note.trim(),
@@ -108,19 +116,17 @@ export function useOrders() {
     })
   }, [])
 
-  // Hilfsfunktion: Kann noch sofort storniert werden? (innerhalb 3 Min)
   function canSelfCancel(order) {
     if (!order.createdAt) return false
     const created = order.createdAt.toDate ? order.createdAt.toDate() : new Date(order.createdAt)
     return (Date.now() - created.getTime()) < 3 * 60 * 1000
   }
 
-  // Offene Bestellungen (für Admin-Badge)
   const pendingCount = orders.filter(o => o.status === 'pending' || o.status === 'cancel_requested').length
 
   return {
     orders, loading, pendingCount,
-    createOrder, markDelivered, confirmCancel,
+    createOrder, markDelivered, resetToOpen, confirmCancel,
     cancelImmediate, requestCancel, updateNote,
     canSelfCancel,
   }
