@@ -8,6 +8,7 @@ import DashboardLayout  from './pages/dashboard/DashboardLayout'
 import Dashboard        from './pages/dashboard/Dashboard'
 import CharacterView    from './pages/dashboard/CharacterView'
 import GuildInfo        from './pages/dashboard/GuildInfo'
+import GuildAdmin       from './pages/admin/GuildAdmin'
 import Roster           from './pages/dashboard/Roster'
 import Calendar         from './pages/dashboard/Calendar'
 import DKP              from './pages/dashboard/DKP'
@@ -48,6 +49,7 @@ export default function App() {
             <Route path="ranks"            element={<Ranks />} />
             <Route path="events"           element={<Events />} />
             <Route path="dkp"              element={<DKPAdmin />} />
+            <Route path="gilde"            element={<GuildAdmin />} />
             <Route path="auditlog"         element={<AuditLog />} />
             <Route path="credentials"      element={<Credentials />} />
           </Route>
