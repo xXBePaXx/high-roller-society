@@ -11,9 +11,10 @@ function Card({ children, t, style={} }) {
 
 // ── Kaufdialog ────────────────────────────────────────────────────────────────
 function BuyDialog({ item, t, onConfirm, onCancel, busy, formatCoins, config }) {
-  const deliveryOptions = DELIVERY_TYPES.filter(d =>
-    item.deliveryType === 'both' ? true : d.id === item.deliveryType
-  )
+  // Bei 'both': User wählt zwischen Ingame und Postalisch (nicht 'both' selbst)
+  const deliveryOptions = item.deliveryType === 'both'
+    ? DELIVERY_TYPES.filter(d => d.id === 'ingame' || d.id === 'postal')
+    : DELIVERY_TYPES.filter(d => d.id === item.deliveryType)
   const [selectedDelivery, setSelectedDelivery] = useState(deliveryOptions[0]?.id || 'ingame')
   const [note, setNote] = useState('')
 
